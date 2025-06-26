@@ -1,0 +1,42 @@
+{
+  "author": "Vedant Chainani <vedantchainani1084@gmail.com>",
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.5"
+  },
+  "exports": {
+    "./biome": "./biome/base.json",
+    "./biome/base": "./biome/base.json",
+    "./biome/next": "./biome/next.json",
+    "./biome/react": "./biome/react.json",
+    "./biome/test": "./biome/test.json",
+    "./tsconfig/bundler": "./tsconfig/bundler/dom.json",
+    "./tsconfig/bundler/dom": "./tsconfig/bundler/dom.json",
+    "./tsconfig/bundler/dom/app": "./tsconfig/bundler/dom.json",
+    "./tsconfig/bundler/dom/library": "./tsconfig/bundler/dom.json",
+    "./tsconfig/bundler/dom/library-monorepo": "./tsconfig/bundler/dom.json",
+    "./tsconfig/bundler/no-dom": "./tsconfig/bundler/no-dom.json",
+    "./tsconfig/bundler/no-dom/app": "./tsconfig/bundler/no-dom.json",
+    "./tsconfig/bundler/no-dom/library": "./tsconfig/bundler/no-dom.json",
+    "./tsconfig/bundler/no-dom/library-monorepo": "./tsconfig/bundler/no-dom.json",
+    "./tsconfig/tsc": "./tsconfig/tsc/dom/app.json",
+    "./tsconfig/tsc/dom": "./tsconfig/tsc/dom/app.json",
+    "./tsconfig/tsc/dom/app": "./tsconfig/tsc/dom/app.json",
+    "./tsconfig/tsc/dom/library": "./tsconfig/tsc/dom/library.json",
+    "./tsconfig/tsc/dom/library-monorepo": "./tsconfig/tsc/dom/library-monorepo.json",
+    "./tsconfig/tsc/no-dom": "./tsconfig/tsc/no-dom/app.json",
+    "./tsconfig/tsc/no-dom/app": "./tsconfig/tsc/no-dom/app.json",
+    "./tsconfig/tsc/no-dom/library": "./tsconfig/tsc/no-dom/library.json",
+    "./tsconfig/tsc/no-dom/library-monorepo": "./tsconfig/tsc/no-dom/library-monorepo.json"
+  },
+  "files": ["./biome", "./tsconfig"],
+  "license": "MIT",
+  "name": "@repo/config",
+  "scripts": {
+    "format": "pnpm exec biome format",
+    "format:write": "pnpm exec biome format --write",
+    "lint": "pnpm exec biome lint && pnpm exec biome check",
+    "lint:write": "pnpm exec biome lint --write && pnpm exec biome check --write"
+  },
+  "type": "module",
+  "version": "0.0.1"
+}

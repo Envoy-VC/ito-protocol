@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "declarationMap": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": { "@repo/ui/*": ["./src/*"] },
+    "strictNullChecks": true
+  },
+  "exclude": ["node_modules", "dist"],
+  "extends": "@repo/config/tsconfig/bundler/dom/library",
+  "include": ["**/*.ts", "**/*.tsx"]
+}
