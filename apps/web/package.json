@@ -3,7 +3,7 @@
 		"initVersion": "7.38.1"
 	},
 	"dependencies": {
-		"@repo/ui": "workspace:*",
+		"@ito-protocol/ui": "workspace:*",
 		"@t3-oss/env-nextjs": "^0.13.8",
 		"@tanstack/react-query": "^5.81.2",
 		"@trpc/client": "^11.4.2",
@@ -23,7 +23,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.5",
-		"@repo/config": "workspace:*",
+		"@ito-protocol/config": "workspace:*",
 		"@tailwindcss/postcss": "4.1.11",
 		"@types/node": "^24.0.4",
 		"@types/react": "^19.1.8",

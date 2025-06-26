@@ -16,7 +16,7 @@
   "description": "UI Library",
   "devDependencies": {
     "@biomejs/biome": "^2.0.5",
-    "@repo/config": "workspace:*",
+    "@ito-protocol/config": "workspace:*",
     "@types/node": "^24.0.4",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -33,7 +33,7 @@
   },
   "keywords": [],
   "license": "ISC",
-  "name": "@repo/ui",
+  "name": "@ito-protocol/ui",
   "scripts": {
     "format": "pnpm exec biome format",
     "format:write": "pnpm exec biome format --write",

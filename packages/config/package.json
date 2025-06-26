@@ -30,7 +30,7 @@
   },
   "files": ["./biome", "./tsconfig"],
   "license": "MIT",
-  "name": "@repo/config",
+  "name": "@ito-protocol/config",
   "scripts": {
     "format": "pnpm exec biome format",
     "format:write": "pnpm exec biome format --write",

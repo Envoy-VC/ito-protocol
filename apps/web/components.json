@@ -2,10 +2,10 @@
 	"$schema": "https://ui.shadcn.com/schema.json",
 	"aliases": {
 		"components": "~/components",
-		"hooks": "@repo/ui/hooks",
-		"lib": "@repo/ui/lib",
-		"ui": "@repo/ui/components",
-		"utils": "@repo/ui/lib/utils"
+		"hooks": "@ito-protocol/ui/hooks",
+		"lib": "@ito-protocol/ui/lib",
+		"ui": "@ito-protocol/ui/components",
+		"utils": "@ito-protocol/ui/lib/utils"
 	},
 	"iconLibrary": "lucide",
 	"rsc": true,

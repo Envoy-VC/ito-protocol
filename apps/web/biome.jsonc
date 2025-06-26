@@ -1,6 +1,6 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.0.5/schema.json",
-	"extends": ["@repo/config/biome/next"],
+	"extends": ["@ito-protocol/config/biome/next"],
 	"overrides": [
 		{
 			"includes": ["./src/env.js"],

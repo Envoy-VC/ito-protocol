@@ -8,10 +8,10 @@
     "lib": ["ES2022"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "paths": { "@repo/ui/*": ["./src/*"] },
+    "paths": { "@ito-protocol/ui/*": ["./src/*"] },
     "strictNullChecks": true
   },
   "exclude": ["node_modules", "dist"],
-  "extends": "@repo/config/tsconfig/bundler/dom/library",
+  "extends": "@ito-protocol/config/tsconfig/bundler/dom/library",
   "include": ["**/*.ts", "**/*.tsx"]
 }
