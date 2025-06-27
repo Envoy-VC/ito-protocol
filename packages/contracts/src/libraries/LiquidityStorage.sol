@@ -2,8 +2,7 @@
 pragma solidity ^0.8.28;
 
 library LiquidityStorageLib {
-    bytes32 constant LIQUIDITY_STORAGE_POSITION =
-        keccak256("ito.protocol.liquidity.storage");
+    bytes32 constant LIQUIDITY_STORAGE_POSITION = keccak256("ito.protocol.liquidity.storage");
 
     error PoolAlreadyExists(bytes8 poolId);
     error DuplicateToken(address token);
@@ -51,21 +50,14 @@ library LiquidityStorageLib {
         address itoProxy;
     }
 
-    function liquidityStorage()
-        internal
-        pure
-        returns (LiquidityStorage storage os)
-    {
+    function liquidityStorage() internal pure returns (LiquidityStorage storage os) {
         bytes32 position = LIQUIDITY_STORAGE_POSITION;
         assembly {
             os.slot := position
         }
     }
 
-    function initLiquidityStorage(
-        address _rewardToken,
-        address _itoProxy
-    ) internal {
+    function initLiquidityStorage(address _rewardToken, address _itoProxy) internal {
         LiquidityStorage storage ls = liquidityStorage();
         ls.rewardToken = _rewardToken;
         ls.itoProxy = _itoProxy;
@@ -75,28 +67,17 @@ library LiquidityStorageLib {
 
     function poolExists(bytes8 poolId) public view returns (bool) {
         LiquidityStorage storage ls = liquidityStorage();
-        if (
-            ls.poolConfigs[poolId].tokenA == address(0) ||
-            ls.poolConfigs[poolId].tokenB == address(0)
-        ) {
+        if (ls.poolConfigs[poolId].tokenA == address(0) || ls.poolConfigs[poolId].tokenB == address(0)) {
             return false;
         }
         return true;
     }
 
-    function validatePoolConfig(
-        address tokenA,
-        address tokenB
-    ) internal view returns (bytes8) {
+    function validatePoolConfig(address tokenA, address tokenB) internal view returns (bytes8) {
         LiquidityStorage storage ls = liquidityStorage();
 
         // Compute Pool Id
-        bytes8 poolId = encodePoolId(
-            tokenA,
-            tokenB,
-            ls.nextPoolNonce,
-            ls.version
-        );
+        bytes8 poolId = encodePoolId(tokenA, tokenB, ls.nextPoolNonce, ls.version);
 
         // Ensure that Pool does not already exist
         if (poolExists(poolId)) {
@@ -129,15 +110,12 @@ library LiquidityStorageLib {
 
     /// @custom:future In future rewrite this to use bit-packed pool ids with a pool factory as used by Balancer
     /// eg- 20 B pool address | 2 B specialization | 10 B nonce
-    function encodePoolId(
-        address tokenA,
-        address tokenB,
-        uint80 nextPoolNonce,
-        uint8 version
-    ) public pure returns (bytes8 poolId) {
+    function encodePoolId(address tokenA, address tokenB, uint80 nextPoolNonce, uint8 version)
+        public
+        pure
+        returns (bytes8 poolId)
+    {
         // Pool Id = last8Bytes(keccak(tokenA,tokenB,nonce,version))
-        poolId = last8bytes(
-            keccak256(abi.encodePacked(tokenA, tokenB, nextPoolNonce, version))
-        );
+        poolId = last8bytes(keccak256(abi.encodePacked(tokenA, tokenB, nextPoolNonce, version)));
     }
 }

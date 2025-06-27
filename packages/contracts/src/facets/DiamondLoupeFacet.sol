@@ -23,9 +23,7 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
         for (uint256 i; i < numFacets; i++) {
             address facetAddress_ = ds.facetAddresses[i];
             facets_[i].facetAddress = facetAddress_;
-            facets_[i].functionSelectors = ds
-                .facetFunctionSelectors[facetAddress_]
-                .functionSelectors;
+            facets_[i].functionSelectors = ds.facetFunctionSelectors[facetAddress_].functionSelectors;
         }
     }
 
@@ -35,13 +33,14 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     /// 2. Returns the array of function selectors for the specified facet
     /// @param _facet The address of the facet to query
     /// @return facetFunctionSelectors_ Array of function selectors implemented by the facet
-    function facetFunctionSelectors(
-        address _facet
-    ) public view override returns (bytes4[] memory facetFunctionSelectors_) {
+    function facetFunctionSelectors(address _facet)
+        public
+        view
+        override
+        returns (bytes4[] memory facetFunctionSelectors_)
+    {
         ItoProxyLib.DiamondStorage storage ds = ItoProxyLib.diamondStorage();
-        facetFunctionSelectors_ = ds
-            .facetFunctionSelectors[_facet]
-            .functionSelectors;
+        facetFunctionSelectors_ = ds.facetFunctionSelectors[_facet].functionSelectors;
     }
 
     /// @notice Gets all facet addresses used by the diamond proxy
@@ -49,12 +48,7 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     /// 1. Retrieves the diamond storage
     /// 2. Returns the array of all facet addresses
     /// @return facetAddresses_ Array of all facet addresses in the diamond proxy
-    function facetAddresses()
-        public
-        view
-        override
-        returns (address[] memory facetAddresses_)
-    {
+    function facetAddresses() public view override returns (address[] memory facetAddresses_) {
         ItoProxyLib.DiamondStorage storage ds = ItoProxyLib.diamondStorage();
         facetAddresses_ = ds.facetAddresses;
     }
@@ -66,22 +60,16 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     /// If no facet implements the selector, returns address(0)
     /// @param _functionSelector The function selector to query
     /// @return facetAddress_ The address of the facet that implements the function selector
-    function facetAddress(
-        bytes4 _functionSelector
-    ) public view override returns (address facetAddress_) {
+    function facetAddress(bytes4 _functionSelector) public view override returns (address facetAddress_) {
         ItoProxyLib.DiamondStorage storage ds = ItoProxyLib.diamondStorage();
-        facetAddress_ = ds
-            .selectorToFacetAndPosition[_functionSelector]
-            .facetAddress;
+        facetAddress_ = ds.selectorToFacetAndPosition[_functionSelector].facetAddress;
     }
 
     /// @notice Checks if the contract supports a specific interface
     /// @dev This function implements ERC-165 interface detection
     /// @param _interfaceId The interface identifier to check
     /// @return bool True if the interface is supported, false otherwise
-    function supportsInterface(
-        bytes4 _interfaceId
-    ) public view override returns (bool) {
+    function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
         ItoProxyLib.DiamondStorage storage ds = ItoProxyLib.diamondStorage();
         return ds.supportedInterfaces[_interfaceId];
     }

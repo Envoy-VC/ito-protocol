@@ -34,6 +34,11 @@ contract SetUp is Test {
     Vm.Wallet public owner;
     Vm.Wallet public treasury;
 
+    // Misc Wallets
+    Vm.Wallet public alice;
+    Vm.Wallet public bob;
+    Vm.Wallet public charlie;
+
     // Proxy
     ItoProxy public itoProxy;
 
@@ -67,6 +72,9 @@ contract SetUp is Test {
         }
         owner = vm.createWallet("owner");
         treasury = vm.createWallet("treasury");
+        alice = vm.createWallet("alice");
+        bob = vm.createWallet("bob");
+        charlie = vm.createWallet("charlie");
         vm.startBroadcast(owner.addr);
 
         // Deploy Diamond Cut Facet
@@ -75,11 +83,7 @@ contract SetUp is Test {
         OwnershipFacet _ownershipFacet = new OwnershipFacet();
 
         // Deploy Proxy
-        itoProxy = new ItoProxy(
-            owner.addr,
-            address(_diamondCutFacet),
-            address(_ownershipFacet)
-        );
+        itoProxy = new ItoProxy(owner.addr, address(_diamondCutFacet), address(_ownershipFacet));
 
         // Initialize Facets
         initializeFacets(address(itoProxy));
@@ -116,9 +120,7 @@ contract SetUp is Test {
         // Diamond Loupe Facet
         bytes4[] memory diamondLoupeSelectors = new bytes4[](6);
         diamondLoupeSelectors[0] = DiamondLoupeFacet.facets.selector;
-        diamondLoupeSelectors[1] = DiamondLoupeFacet
-            .facetFunctionSelectors
-            .selector;
+        diamondLoupeSelectors[1] = DiamondLoupeFacet.facetFunctionSelectors.selector;
         diamondLoupeSelectors[2] = DiamondLoupeFacet.facetAddresses.selector;
         diamondLoupeSelectors[3] = DiamondLoupeFacet.facetAddress.selector;
         diamondLoupeSelectors[4] = DiamondLoupeFacet.supportsInterface.selector;
@@ -171,12 +173,7 @@ contract SetUp is Test {
         cut.diamondCut(
             facetCuts,
             address(itoInit),
-            abi.encodeWithSelector(
-                ItoInitializer.init.selector,
-                treasury.addr,
-                address(itoToken),
-                address(itoProxy)
-            )
+            abi.encodeWithSelector(ItoInitializer.init.selector, treasury.addr, address(itoToken), address(itoProxy))
         );
     }
 }

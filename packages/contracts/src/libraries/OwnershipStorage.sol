@@ -2,8 +2,7 @@
 pragma solidity ^0.8.28;
 
 library OwnershipStorageLib {
-    bytes32 constant OWNERSHIP_STORAGE_POSITION =
-        keccak256("ito.protocol.ownership.storage");
+    bytes32 constant OWNERSHIP_STORAGE_POSITION = keccak256("ito.protocol.ownership.storage");
 
     error AlreadyInitialized();
     error NotOwner();
@@ -13,11 +12,7 @@ library OwnershipStorageLib {
         address pendingOwner;
     }
 
-    function ownershipStorage()
-        internal
-        pure
-        returns (OwnershipStorage storage os)
-    {
+    function ownershipStorage() internal pure returns (OwnershipStorage storage os) {
         bytes32 position = OWNERSHIP_STORAGE_POSITION;
         assembly {
             os.slot := position

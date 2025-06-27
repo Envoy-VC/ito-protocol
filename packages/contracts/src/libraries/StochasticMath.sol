@@ -42,10 +42,7 @@ library StochasticMath {
         uint256 desiredRatio = (amountADesired * PRECISION) / amountBDesired;
 
         // Volatility-weighted ratio adjustment
-        uint256 adjustedRatio = (sigma *
-            currentRatio +
-            (PRECISION - sigma) *
-            desiredRatio) / PRECISION;
+        uint256 adjustedRatio = (sigma * currentRatio + (PRECISION - sigma) * desiredRatio) / PRECISION;
 
         // Calculate optimal tokenB for desired tokenA
         uint256 amountBOptimal = (amountADesired * PRECISION) / adjustedRatio;
@@ -53,8 +50,7 @@ library StochasticMath {
         if (amountBOptimal <= amountBDesired) {
             return (amountADesired, amountBOptimal);
         } else {
-            uint256 amountAOptimal = (amountBDesired * adjustedRatio) /
-                PRECISION;
+            uint256 amountAOptimal = (amountBDesired * adjustedRatio) / PRECISION;
             return (amountAOptimal, amountBDesired);
         }
     }
@@ -79,12 +75,8 @@ library StochasticMath {
         uint256 liquidityB = (amountB * totalLPTokens) / reserveB;
 
         // Weighted average based on volatility
-        liquidity =
-            (sigma *
-                Math.min(liquidityA, liquidityB) +
-                (PRECISION - sigma) *
-                ((liquidityA + liquidityB) / 2)) /
-            PRECISION;
+        liquidity = (sigma * Math.min(liquidityA, liquidityB) + (PRECISION - sigma) * ((liquidityA + liquidityB) / 2))
+            / PRECISION;
     }
 
     function calculatePendingRewards(
@@ -96,19 +88,15 @@ library StochasticMath {
         uint256 volatility
     ) internal view returns (uint256 pending) {
         // Calculate base pending rewards from pool accumulation
-        uint256 poolPending = ((userLPTokens * accRewardPerShare) / PRECISION) -
-            rewardDebt;
+        uint256 poolPending = ((userLPTokens * accRewardPerShare) / PRECISION) - rewardDebt;
 
         // Calculate time-based rewards since last interaction
         uint256 timeElapsed = block.timestamp - lastInteraction;
-        uint256 timeBasedRewards = (userLPTokens *
-            baseRewardRate *
-            timeElapsed) / PRECISION;
+        uint256 timeBasedRewards = (userLPTokens * baseRewardRate * timeElapsed) / PRECISION;
 
         // Apply volatility multiplier (higher volatility = more rewards)
         uint256 volatilityMultiplier = PRECISION + (volatility / 2); // 50% bonus at 100% volatility
-        uint256 adjustedRewards = (timeBasedRewards * volatilityMultiplier) /
-            PRECISION;
+        uint256 adjustedRewards = (timeBasedRewards * volatilityMultiplier) / PRECISION;
 
         pending = poolPending + adjustedRewards;
     }

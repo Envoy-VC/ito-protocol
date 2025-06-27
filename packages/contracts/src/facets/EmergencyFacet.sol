@@ -17,8 +17,7 @@ contract EmergencyFacet {
 
     function pause() public {
         OwnershipStorageLib._enforceContractOwner();
-        EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib
-            .emergencyStorage();
+        EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib.emergencyStorage();
         if (es.paused) {
             revert NotPaused();
         }
@@ -28,8 +27,7 @@ contract EmergencyFacet {
 
     function unpause() public {
         OwnershipStorageLib._enforceContractOwner();
-        EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib
-            .emergencyStorage();
+        EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib.emergencyStorage();
         if (!es.paused) {
             revert NotPaused();
         }
@@ -38,8 +36,7 @@ contract EmergencyFacet {
     }
 
     function whenNotPaused() public view {
-        EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib
-            .emergencyStorage();
+        EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib.emergencyStorage();
         if (es.paused) {
             revert NotPaused();
         }

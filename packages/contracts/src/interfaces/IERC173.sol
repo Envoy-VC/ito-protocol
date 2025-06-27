@@ -6,10 +6,7 @@ pragma solidity ^0.8.28;
 /// @dev This interface defines the standard functions for managing contract ownership
 interface IERC173 {
     /// Emitted when ownership of a contract is transferred
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /// @notice Returns the address of the current owner
     /// @return owner The address of the current owner

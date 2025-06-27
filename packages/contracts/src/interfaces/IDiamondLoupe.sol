@@ -20,21 +20,14 @@ interface IDiamondLoupe {
     /// @notice Gets all function selectors supported by a specific facet
     /// @param _facet The address of the facet to query
     /// @return facetFunctionSelectors An array of function selectors implemented by the facet
-    function facetFunctionSelectors(
-        address _facet
-    ) external view returns (bytes4[] memory facetFunctionSelectors);
+    function facetFunctionSelectors(address _facet) external view returns (bytes4[] memory facetFunctionSelectors);
 
     /// @notice Gets all facet addresses used by the diamond proxy
     /// @return facetAddresses An array of all facet addresses
-    function facetAddresses()
-        external
-        view
-        returns (address[] memory facetAddresses);
+    function facetAddresses() external view returns (address[] memory facetAddresses);
 
     /// @notice Gets the facet address that implements a specific function selector
     /// @param _functionSelector The function selector to query
     /// @return facetAddress The address of the facet that implements the function selector
-    function facetAddress(
-        bytes4 _functionSelector
-    ) external view returns (address facetAddress);
+    function facetAddress(bytes4 _functionSelector) external view returns (address facetAddress);
 }

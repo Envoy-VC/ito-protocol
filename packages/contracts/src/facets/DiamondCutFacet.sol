@@ -17,11 +17,7 @@ contract DiamondCutFacet is IDiamondCut {
     /// @param _diamondCut Array of FacetCut structs containing the modifications to perform
     /// @param _init Address of the initialization contract (if any)
     /// @param _calldata Calldata to be passed to the initialization contract
-    function diamondCut(
-        FacetCut[] calldata _diamondCut,
-        address _init,
-        bytes calldata _calldata
-    ) external override {
+    function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata) external override {
         OwnershipStorageLib._enforceContractOwner();
         ItoProxyLib.diamondCut(_diamondCut, _init, _calldata);
     }

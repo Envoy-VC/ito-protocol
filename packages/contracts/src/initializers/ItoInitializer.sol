@@ -21,11 +21,7 @@ import {LiquidityStorageLib} from "../libraries/LiquidityStorage.sol";
 /// through the diamondCut function.
 contract ItoInitializer {
     /// @notice Initializes the diamond proxy with required interfaces and state variables
-    function init(
-        address _treasury,
-        address _rewardToken,
-        address _itoProxy
-    ) public {
+    function init(address _treasury, address _rewardToken, address _itoProxy) public {
         // adding ERC165 data
         ItoProxyLib.DiamondStorage storage ds = ItoProxyLib.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;

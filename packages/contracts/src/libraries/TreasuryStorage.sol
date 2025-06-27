@@ -2,8 +2,7 @@
 pragma solidity ^0.8.28;
 
 library TreasuryStorageLib {
-    bytes32 constant TREASURY_STORAGE_POSITION =
-        keccak256("ito.protocol.treasury.storage");
+    bytes32 constant TREASURY_STORAGE_POSITION = keccak256("ito.protocol.treasury.storage");
 
     error AlreadyInitialized();
 
@@ -11,11 +10,7 @@ library TreasuryStorageLib {
         address treasury;
     }
 
-    function treasuryStorage()
-        internal
-        pure
-        returns (TreasuryStorage storage os)
-    {
+    function treasuryStorage() internal pure returns (TreasuryStorage storage os) {
         bytes32 position = TREASURY_STORAGE_POSITION;
         assembly {
             os.slot := position

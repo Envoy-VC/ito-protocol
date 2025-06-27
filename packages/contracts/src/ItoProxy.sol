@@ -20,11 +20,7 @@ contract ItoProxy {
     /// 2. Adding the diamondCut function from the diamondCutFacet
     /// @param _contractOwner The address that will be set as the contract owner
     /// @param _diamondCutFacet The address of the facet implementing the diamondCut function
-    constructor(
-        address _contractOwner,
-        address _diamondCutFacet,
-        address _ownershipFacet
-    ) payable {
+    constructor(address _contractOwner, address _diamondCutFacet, address _ownershipFacet) payable {
         // Initialize ownership
         OwnershipStorageLib.initOwnership(_contractOwner);
 
@@ -77,12 +73,8 @@ contract ItoProxy {
             returndatacopy(0, 0, returndatasize())
             // return any return value or error back to the caller
             switch result
-            case 0 {
-                revert(0, returndatasize())
-            }
-            default {
-                return(0, returndatasize())
-            }
+            case 0 { revert(0, returndatasize()) }
+            default { return(0, returndatasize()) }
         }
     }
 

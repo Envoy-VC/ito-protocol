@@ -28,11 +28,7 @@ interface IDiamondCut {
     /// @param _diamondCut Array of FacetCut structs containing the modifications to perform
     /// @param _init Address of the initialization contract (if any)
     /// @param _calldata Calldata to be passed to the initialization contract
-    function diamondCut(
-        FacetCut[] calldata _diamondCut,
-        address _init,
-        bytes calldata _calldata
-    ) external;
+    function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata) external;
 
     /// @notice Emitted when a diamond cut operation is performed
     /// @param _diamondCut Array of FacetCut structs that were applied

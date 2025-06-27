@@ -11,14 +11,9 @@ import {ItoProxyLib} from "../src/libraries/ItoProxyLib.sol";
 // Interfaces
 import {IDiamondLoupe} from "../src/interfaces/IDiamondLoupe.sol";
 
-contract TesserProxyTests is Test, SetUp {
-    Vm.Wallet public alice;
-    Vm.Wallet public bob;
-
+contract ItoProxyTests is Test, SetUp {
     function setUp() public virtual override {
         super.setUp();
-        alice = vm.createWallet("alice");
-        bob = vm.createWallet("bob");
     }
 
     function test_deployment() public view {

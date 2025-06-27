@@ -7,13 +7,7 @@ import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20P
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ItoToken is ERC20, ERC20Burnable, Ownable, ERC20Permit {
-    constructor(
-        address initialOwner
-    )
-        ERC20("ITO Token", "ITO")
-        Ownable(initialOwner)
-        ERC20Permit("ITO Token")
-    {}
+    constructor(address initialOwner) ERC20("ITO Token", "ITO") Ownable(initialOwner) ERC20Permit("ITO Token") {}
 
     function mint(address to, uint256 amount) public {
         _mint(to, amount);
