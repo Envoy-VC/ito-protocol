@@ -22,7 +22,7 @@ contract DiamondCutFacet is IDiamondCut {
         address _init,
         bytes calldata _calldata
     ) external override {
-        OwnershipStorageLib.enforceContractOwner();
+        OwnershipStorageLib._enforceContractOwner();
         ItoProxyLib.diamondCut(_diamondCut, _init, _calldata);
     }
 }

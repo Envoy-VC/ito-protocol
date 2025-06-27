@@ -10,7 +10,7 @@ contract TreasuryFacet {
     }
 
     function setTreasury(address newTreasury) public {
-        OwnershipStorageLib.enforceContractOwner();
+        OwnershipStorageLib._enforceContractOwner();
         TreasuryStorageLib.TreasuryStorage storage ts = TreasuryStorageLib
             .treasuryStorage();
         ts.treasury = newTreasury;

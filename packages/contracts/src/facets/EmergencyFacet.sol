@@ -5,29 +5,43 @@ import {OwnershipStorageLib} from "../libraries/OwnershipStorage.sol";
 import {EmergencyStorageLib} from "../libraries/EmergencyStorage.sol";
 
 contract EmergencyFacet {
+    event Paused(address account);
+    event Unpaused(address account);
+
+    error AlreadyPaused();
+    error NotPaused();
+
     function isPaused() public view returns (bool) {
         return EmergencyStorageLib.emergencyStorage().paused;
     }
 
     function pause() public {
-        OwnershipStorageLib.enforceContractOwner();
+        OwnershipStorageLib._enforceContractOwner();
         EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib
             .emergencyStorage();
         if (es.paused) {
-            revert EmergencyStorageLib.NotPaused();
+            revert NotPaused();
         }
         es.paused = true;
-        emit EmergencyStorageLib.Paused(msg.sender);
+        emit Paused(msg.sender);
     }
 
     function unpause() public {
-        OwnershipStorageLib.enforceContractOwner();
+        OwnershipStorageLib._enforceContractOwner();
         EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib
             .emergencyStorage();
         if (!es.paused) {
-            revert EmergencyStorageLib.NotPaused();
+            revert NotPaused();
         }
         es.paused = false;
-        emit EmergencyStorageLib.Unpaused(msg.sender);
+        emit Unpaused(msg.sender);
+    }
+
+    function whenNotPaused() public view {
+        EmergencyStorageLib.EmergencyStorage storage es = EmergencyStorageLib
+            .emergencyStorage();
+        if (es.paused) {
+            revert NotPaused();
+        }
     }
 }

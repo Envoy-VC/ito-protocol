@@ -4,6 +4,9 @@ pragma solidity ^0.8.28;
 import {OwnershipStorageLib} from "../libraries/OwnershipStorage.sol";
 
 contract OwnershipFacet {
+    error NotOwner();
+    error ZeroAddress();
+
     event OwnershipTransferStarted(
         address indexed previousOwner,
         address indexed newOwner
@@ -20,8 +23,12 @@ contract OwnershipFacet {
     function transferOwnership(address newOwner) external {
         OwnershipStorageLib.OwnershipStorage storage os = OwnershipStorageLib
             .ownershipStorage();
-        require(msg.sender == os.owner, "Only owner");
-        require(newOwner != address(0), "Zero address");
+        if (msg.sender != os.owner) {
+            revert NotOwner();
+        }
+        if (newOwner == address(0)) {
+            revert ZeroAddress();
+        }
         os.pendingOwner = newOwner;
         emit OwnershipTransferStarted(os.owner, newOwner);
     }
@@ -29,9 +36,15 @@ contract OwnershipFacet {
     function acceptOwnership() external {
         OwnershipStorageLib.OwnershipStorage storage os = OwnershipStorageLib
             .ownershipStorage();
-        require(msg.sender == os.pendingOwner, "Not pending owner");
+        if (msg.sender != os.pendingOwner) {
+            revert NotOwner();
+        }
         emit OwnershipTransferred(os.owner, os.pendingOwner);
         os.owner = os.pendingOwner;
         os.pendingOwner = address(0);
+    }
+
+    function enforceContractOwner() public view {
+        OwnershipStorageLib._enforceContractOwner();
     }
 }

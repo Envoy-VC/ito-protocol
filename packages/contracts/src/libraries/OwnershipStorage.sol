@@ -6,6 +6,7 @@ library OwnershipStorageLib {
         keccak256("ito.protocol.ownership.storage");
 
     error AlreadyInitialized();
+    error NotOwner();
 
     struct OwnershipStorage {
         address owner;
@@ -31,30 +32,10 @@ library OwnershipStorageLib {
         os.owner = initialOwner;
     }
 
-    function enforceContractOwner() internal view {
+    function _enforceContractOwner() internal view {
         OwnershipStorage storage os = ownershipStorage();
-        require(
-            msg.sender == os.owner,
-            "OwnershipStorage: Must be contract owner"
-        );
-    }
-
-    function transferOwnership(address newOwner) public {
-        OwnershipStorage storage os = ownershipStorage();
-        require(
-            msg.sender == os.owner,
-            "OwnershipStorage: Must be contract owner"
-        );
-        os.pendingOwner = newOwner;
-    }
-
-    function acceptOwnership() public {
-        OwnershipStorage storage os = ownershipStorage();
-        require(
-            msg.sender == os.pendingOwner,
-            "OwnershipStorage: Must be pending owner"
-        );
-        os.owner = os.pendingOwner;
-        os.pendingOwner = address(0);
+        if (msg.sender != os.owner) {
+            revert NotOwner();
+        }
     }
 }
