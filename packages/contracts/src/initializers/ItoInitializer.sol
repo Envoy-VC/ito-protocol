@@ -11,6 +11,8 @@ import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
 // Storage
 import {OwnershipStorageLib} from "../libraries/OwnershipStorage.sol";
+import {TreasuryStorageLib} from "../libraries/TreasuryStorage.sol";
+import {LiquidityStorageLib} from "../libraries/LiquidityStorage.sol";
 
 /// @title ItoInitializer
 /// @notice Initialization contract for the Ito Diamond proxy
@@ -19,13 +21,19 @@ import {OwnershipStorageLib} from "../libraries/OwnershipStorage.sol";
 /// through the diamondCut function.
 contract ItoInitializer {
     /// @notice Initializes the diamond proxy with required interfaces and state variables
-    function init() public {
+    function init(
+        address _treasury,
+        address _rewardToken,
+        address _itoProxy
+    ) public {
         // adding ERC165 data
-        ItoProxyLib.DiamondStorage storage ds = ItoProxyLib
-            .diamondStorage();
+        ItoProxyLib.DiamondStorage storage ds = ItoProxyLib.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
+
+        TreasuryStorageLib.initTreasuryStorage(_treasury);
+        LiquidityStorageLib.initLiquidityStorage(_rewardToken, _itoProxy);
     }
 }

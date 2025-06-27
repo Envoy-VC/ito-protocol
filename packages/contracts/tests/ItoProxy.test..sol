@@ -28,6 +28,6 @@ contract TesserProxyTests is Test, SetUp {
 
     function test_facets() public view {
         IDiamondLoupe.Facet[] memory facets = diamondLoupeFacet.facets();
-        assertEq(facets.length, 3);
+        assertEq(facets.length, 6);
     }
 }

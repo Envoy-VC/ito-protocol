@@ -10,6 +10,9 @@ import {ItoProxy} from "../../src/ItoProxy.sol";
 import {DiamondCutFacet} from "../../src/facets/DiamondCutFacet.sol";
 import {DiamondLoupeFacet} from "../../src/facets/DiamondLoupeFacet.sol";
 import {OwnershipFacet} from "../../src/facets/OwnershipFacet.sol";
+import {EmergencyFacet} from "../../src/facets/EmergencyFacet.sol";
+import {LiquidityFacet} from "../../src/facets/LiquidityFacet.sol";
+import {TreasuryFacet} from "../../src/facets/TreasuryFacet.sol";
 
 // Initializers
 import {ItoInitializer} from "../../src/initializers/ItoInitializer.sol";
@@ -20,8 +23,16 @@ import {ItoProxyLib} from "../../src/libraries/ItoProxyLib.sol";
 // Interfaces
 import {IDiamondCut} from "../../src/interfaces/IDiamondCut.sol";
 
+// Token
+import {ItoToken} from "../../src/ItoToken.sol";
+
+// Mocks
+import {MockUSD} from "../../src/mocks/MockUSD.sol";
+import {MockETH} from "../../src/mocks/MockETH.sol";
+
 contract SetUp is Test {
     Vm.Wallet public owner;
+    Vm.Wallet public treasury;
 
     // Proxy
     ItoProxy public itoProxy;
@@ -30,6 +41,16 @@ contract SetUp is Test {
     DiamondCutFacet public diamondCutFacet;
     DiamondLoupeFacet public diamondLoupeFacet;
     OwnershipFacet public ownershipFacet;
+    LiquidityFacet public liquidityFacet;
+    TreasuryFacet public treasuryFacet;
+    EmergencyFacet public emergencyFacet;
+
+    // Token
+    ItoToken public itoToken;
+
+    // Mocks
+    MockUSD public mockUSD;
+    MockETH public mockETH;
 
     // Initializers
     ItoInitializer public itoInit;
@@ -45,6 +66,7 @@ contract SetUp is Test {
             return;
         }
         owner = vm.createWallet("owner");
+        treasury = vm.createWallet("treasury");
         vm.startBroadcast(owner.addr);
 
         // Deploy Diamond Cut Facet
@@ -66,6 +88,13 @@ contract SetUp is Test {
         diamondCutFacet = DiamondCutFacet(address(itoProxy));
         diamondLoupeFacet = DiamondLoupeFacet(address(itoProxy));
         ownershipFacet = OwnershipFacet(address(itoProxy));
+        liquidityFacet = LiquidityFacet(address(itoProxy));
+        treasuryFacet = TreasuryFacet(address(itoProxy));
+        emergencyFacet = EmergencyFacet(address(itoProxy));
+
+        // Deploy Mocks
+        mockUSD = new MockUSD(owner.addr);
+        mockETH = new MockETH(owner.addr);
 
         vm.stopBroadcast();
 
@@ -77,9 +106,12 @@ contract SetUp is Test {
 
         // Deploy Facets
         DiamondLoupeFacet _diamondLoupeFacet = new DiamondLoupeFacet();
+        TreasuryFacet _treasuryFacet = new TreasuryFacet();
+        LiquidityFacet _liquidityFacet = new LiquidityFacet();
+        EmergencyFacet _emergencyFacet = new EmergencyFacet();
 
         // Prepare diamond cut data
-        IDiamondCut.FacetCut[] memory facetCuts = new IDiamondCut.FacetCut[](1);
+        IDiamondCut.FacetCut[] memory facetCuts = new IDiamondCut.FacetCut[](4);
 
         // Diamond Loupe Facet
         bytes4[] memory diamondLoupeSelectors = new bytes4[](6);
@@ -96,14 +128,55 @@ contract SetUp is Test {
             functionSelectors: diamondLoupeSelectors
         });
 
+        // Treasury Facet
+        bytes4[] memory treasurySelectors = new bytes4[](2);
+        treasurySelectors[0] = TreasuryFacet.treasury.selector;
+        treasurySelectors[1] = TreasuryFacet.setTreasury.selector;
+        facetCuts[1] = IDiamondCut.FacetCut({
+            facetAddress: address(_treasuryFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: treasurySelectors
+        });
+
+        // Emergency Facet
+        bytes4[] memory emergencySelectors = new bytes4[](4);
+        emergencySelectors[0] = EmergencyFacet.isPaused.selector;
+        emergencySelectors[1] = EmergencyFacet.pause.selector;
+        emergencySelectors[2] = EmergencyFacet.unpause.selector;
+        emergencySelectors[3] = EmergencyFacet.whenNotPaused.selector;
+        facetCuts[2] = IDiamondCut.FacetCut({
+            facetAddress: address(_emergencyFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: emergencySelectors
+        });
+
+        // Liquidity Facet
+        bytes4[] memory liquiditySelectors = new bytes4[](3);
+        liquiditySelectors[0] = LiquidityFacet.createPool.selector;
+        liquiditySelectors[1] = LiquidityFacet.addLiquidity.selector;
+        liquiditySelectors[2] = LiquidityFacet.removeLiquidity.selector;
+        facetCuts[3] = IDiamondCut.FacetCut({
+            facetAddress: address(_liquidityFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: liquiditySelectors
+        });
+
         // Deploy Initializer
         itoInit = new ItoInitializer();
+
+        // Deploy Reward Token
+        itoToken = new ItoToken(owner.addr);
 
         // Add Facet Cuts with Initializer
         cut.diamondCut(
             facetCuts,
             address(itoInit),
-            abi.encodeWithSelector(ItoInitializer.init.selector)
+            abi.encodeWithSelector(
+                ItoInitializer.init.selector,
+                treasury.addr,
+                address(itoToken),
+                address(itoProxy)
+            )
         );
     }
 }

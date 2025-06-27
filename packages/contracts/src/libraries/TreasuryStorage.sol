@@ -5,6 +5,8 @@ library TreasuryStorageLib {
     bytes32 constant TREASURY_STORAGE_POSITION =
         keccak256("ito.protocol.treasury.storage");
 
+    error AlreadyInitialized();
+
     struct TreasuryStorage {
         address treasury;
     }
@@ -18,5 +20,13 @@ library TreasuryStorageLib {
         assembly {
             os.slot := position
         }
+    }
+
+    function initTreasuryStorage(address _treasury) internal {
+        TreasuryStorage storage ts = treasuryStorage();
+        if (ts.treasury != address(0)) {
+            revert AlreadyInitialized();
+        }
+        ts.treasury = _treasury;
     }
 }
