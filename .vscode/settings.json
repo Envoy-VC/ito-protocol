@@ -38,10 +38,19 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
-  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list"],
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    "class:list"
+  ],
   "tailwindCSS.classFunctions": ["tw", "clsx", "cva"],
   "tailwindCSS.experimental.configFile": {
-    "packages/ui/src/styles/globals.css": ["apps/web/**", "packages/ui/src/**", "apps/web-vite/**"]
+    "packages/ui/src/styles/globals.css": [
+      "apps/web/**",
+      "packages/ui/src/**",
+      "apps/web-vite/**"
+    ]
   },
   "typescript.tsdk": "node_modules/typescript/lib"
 }

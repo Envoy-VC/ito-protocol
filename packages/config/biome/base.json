@@ -11,7 +11,13 @@
               ":BLANK_LINE:",
               ["next/**", "next"],
               ":BLANK_LINE:",
-              ["react/**", "react", "react-dom", "react-dom/client", "react-dom/server"],
+              [
+                "react/**",
+                "react",
+                "react-dom",
+                "react-dom/client",
+                "react-dom/server"
+              ],
               ":BLANK_LINE:",
               ":PACKAGE:",
               ":BLANK_LINE:",
@@ -38,7 +44,7 @@
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 120
+    "lineWidth": 80
   },
   "javascript": {
     "formatter": {
@@ -139,7 +145,13 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.d.ts", "**/*.config.ts", "**/*.config.js", "**/*.config.mjs", "**/*.config.cjs"],
+      "includes": [
+        "**/*.d.ts",
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/*.config.cjs"
+      ],
       "linter": { "rules": { "style": { "noDefaultExport": "off" } } }
     }
   ],
