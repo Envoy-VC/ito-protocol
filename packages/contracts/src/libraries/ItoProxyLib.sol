@@ -71,7 +71,7 @@ library ItoProxyLib {
         DiamondStorage storage ds,
         address _facetAddress
     ) internal {
-        // enforceHasContractCode(_facetAddress, "ItoProxyLib: New facet has no code");
+        enforceHasContractCode(_facetAddress, "ItoProxyLib: New facet has no code");
         ds.facetFunctionSelectors[_facetAddress].facetAddressPosition = ds
             .facetAddresses
             .length;
@@ -173,7 +173,7 @@ library ItoProxyLib {
         if (_init == address(0)) {
             return;
         }
-        // enforceHasContractCode(_init, "ItoProxyLib: _init address has no code");
+        enforceHasContractCode(_init, "ItoProxyLib: _init address has no code");
         (bool success, bytes memory error) = _init.delegatecall(_calldata);
         if (!success) {
             if (error.length > 0) {
@@ -338,5 +338,16 @@ library ItoProxyLib {
             }
         }
         initializeDiamondCut(_init, _calldata);
+    }
+
+    function enforceHasContractCode(
+        address _contract,
+        string memory _errorMessage
+    ) internal view {
+        uint256 contractSize;
+        assembly {
+            contractSize := extcodesize(_contract)
+        }
+        require(contractSize > 0, _errorMessage);
     }
 }
