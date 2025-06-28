@@ -9,6 +9,7 @@ library OracleStorageLib {
     struct OracleStorage {
         mapping(bytes8 => address) priceFeedAggregators;
         mapping(bytes8 => address) volatilityAggregators;
+        address itoProxy;
     }
 
     function oracleStorage() internal pure returns (OracleStorage storage os) {
@@ -16,5 +17,13 @@ library OracleStorageLib {
         assembly {
             os.slot := position
         }
+    }
+
+    function initOracleStorage(address _itoProxy) public {
+        OracleStorage storage os = oracleStorage();
+        if (os.itoProxy != address(0)) {
+            revert AlreadyInitialized();
+        }
+        os.itoProxy = _itoProxy;
     }
 }

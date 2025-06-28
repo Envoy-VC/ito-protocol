@@ -83,10 +83,12 @@ contract LiquidityFacet is ReentrancyGuard {
 
         // Fetch volatility data from oracle
         uint256 volatility = _getVolatility(poolId);
+        // Fetch price data from oracle
+        uint256 price = _getPrice(poolId);
 
         // Calculate liquidity Amounts
         (amountA, amountB) = StochasticMath.calculateLiquidity(
-            poolState.reserveA, poolState.reserveB, volatility, amountADesired, amountBDesired
+            poolState.reserveA, poolState.reserveB, volatility, price, amountADesired, amountBDesired
         );
 
         if (amountA <= 0) {
@@ -206,9 +208,14 @@ contract LiquidityFacet is ReentrancyGuard {
         }
     }
 
-    function _getVolatility(bytes8 poolId) internal view returns (uint256 volatility) {
+    function _getVolatility(bytes8 poolId) internal view returns (uint256) {
         LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
         return OracleFacet(ls.itoProxy).getLatestVolatility(poolId);
+    }
+
+    function _getPrice(bytes8 poolId) internal view returns (uint256) {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        return OracleFacet(ls.itoProxy).getLatestPrice(poolId);
     }
 
     // View Functions

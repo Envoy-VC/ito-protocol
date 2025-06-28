@@ -23,6 +23,6 @@ contract ItoProxyTests is Test, SetUp {
 
     function test_facets() public view {
         IDiamondLoupe.Facet[] memory facets = diamondLoupeFacet.facets();
-        assertEq(facets.length, 6);
+        assertEq(facets.length, 7);
     }
 }

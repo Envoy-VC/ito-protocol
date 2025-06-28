@@ -1,34 +1,37 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test, console2 as console, Vm} from "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 
 // Proxy
-import {ItoProxy} from "../../src/ItoProxy.sol";
+import {ItoProxy} from "src/ItoProxy.sol";
 
 // Facets
-import {DiamondCutFacet} from "../../src/facets/DiamondCutFacet.sol";
-import {DiamondLoupeFacet} from "../../src/facets/DiamondLoupeFacet.sol";
-import {OwnershipFacet} from "../../src/facets/OwnershipFacet.sol";
-import {EmergencyFacet} from "../../src/facets/EmergencyFacet.sol";
-import {LiquidityFacet} from "../../src/facets/LiquidityFacet.sol";
-import {TreasuryFacet} from "../../src/facets/TreasuryFacet.sol";
+import {DiamondCutFacet} from "src/facets/DiamondCutFacet.sol";
+import {DiamondLoupeFacet} from "src/facets/DiamondLoupeFacet.sol";
+import {OwnershipFacet} from "src/facets/OwnershipFacet.sol";
+import {EmergencyFacet} from "src/facets/EmergencyFacet.sol";
+import {LiquidityFacet} from "src/facets/LiquidityFacet.sol";
+import {TreasuryFacet} from "src/facets/TreasuryFacet.sol";
+import {OracleFacet} from "src/facets/OracleFacet.sol";
 
 // Initializers
-import {ItoInitializer} from "../../src/initializers/ItoInitializer.sol";
-
-// Libraries
-import {ItoProxyLib} from "../../src/libraries/ItoProxyLib.sol";
+import {ItoInitializer} from "src/initializers/ItoInitializer.sol";
 
 // Interfaces
-import {IDiamondCut} from "../../src/interfaces/IDiamondCut.sol";
+import {IDiamondCut} from "src/interfaces/IDiamondCut.sol";
+
+// Libraries
+import {LiquidityStorageLib} from "src/libraries/LiquidityStorage.sol";
 
 // Token
-import {ItoToken} from "../../src/ItoToken.sol";
+import {ItoToken} from "src/ItoToken.sol";
 
 // Mocks
-import {MockUSD} from "../../src/mocks/MockUSD.sol";
-import {MockETH} from "../../src/mocks/MockETH.sol";
+import {MockUSD} from "src/mocks/MockUSD.sol";
+import {MockETH} from "src/mocks/MockETH.sol";
+import {MockPriceFeed} from "src/mocks/MockPriceFeed.sol";
+import {MockVolatilityFeed} from "src/mocks/MockVolatilityFeed.sol";
 
 contract SetUp is Test {
     Vm.Wallet public owner;
@@ -49,6 +52,7 @@ contract SetUp is Test {
     LiquidityFacet public liquidityFacet;
     TreasuryFacet public treasuryFacet;
     EmergencyFacet public emergencyFacet;
+    OracleFacet public oracleFacet;
 
     // Token
     ItoToken public itoToken;
@@ -56,6 +60,8 @@ contract SetUp is Test {
     // Mocks
     MockUSD public mockUSD;
     MockETH public mockETH;
+    MockPriceFeed public mockPriceFeed;
+    MockVolatilityFeed public mockVolatilityFeed;
 
     // Initializers
     ItoInitializer public itoInit;
@@ -95,10 +101,21 @@ contract SetUp is Test {
         liquidityFacet = LiquidityFacet(address(itoProxy));
         treasuryFacet = TreasuryFacet(address(itoProxy));
         emergencyFacet = EmergencyFacet(address(itoProxy));
+        oracleFacet = OracleFacet(address(itoProxy));
 
         // Deploy Mocks
         mockUSD = new MockUSD(owner.addr);
         mockETH = new MockETH(owner.addr);
+        // Initial Price 2500 (8 decimal Places)
+        mockPriceFeed = new MockPriceFeed(owner.addr, 2500e8);
+        // Initial Volatility 0.8% month (5 decimals)
+        mockVolatilityFeed = new MockVolatilityFeed(owner.addr, 80000);
+
+        // Compute Pool Id
+        bytes8 poolId = LiquidityStorageLib.encodePoolId(address(mockETH), address(mockUSD), 0, 1);
+
+        // Add Price Feed to Oracle
+        oracleFacet.addFeed(poolId, address(mockPriceFeed), address(mockVolatilityFeed));
 
         _fundAccounts();
 
@@ -115,9 +132,10 @@ contract SetUp is Test {
         TreasuryFacet _treasuryFacet = new TreasuryFacet();
         LiquidityFacet _liquidityFacet = new LiquidityFacet();
         EmergencyFacet _emergencyFacet = new EmergencyFacet();
+        OracleFacet _oracleFacet = new OracleFacet();
 
         // Prepare diamond cut data
-        IDiamondCut.FacetCut[] memory facetCuts = new IDiamondCut.FacetCut[](4);
+        IDiamondCut.FacetCut[] memory facetCuts = new IDiamondCut.FacetCut[](5);
 
         // Diamond Loupe Facet
         bytes4[] memory diamondLoupeSelectors = new bytes4[](6);
@@ -164,6 +182,17 @@ contract SetUp is Test {
             facetAddress: address(_liquidityFacet),
             action: IDiamondCut.FacetCutAction.Add,
             functionSelectors: liquiditySelectors
+        });
+
+        // Oracle Facet
+        bytes4[] memory oracleSelectors = new bytes4[](3);
+        oracleSelectors[0] = OracleFacet.getLatestPrice.selector;
+        oracleSelectors[1] = OracleFacet.getLatestVolatility.selector;
+        oracleSelectors[2] = OracleFacet.addFeed.selector;
+        facetCuts[4] = IDiamondCut.FacetCut({
+            facetAddress: address(_oracleFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: oracleSelectors
         });
 
         // Deploy Initializer

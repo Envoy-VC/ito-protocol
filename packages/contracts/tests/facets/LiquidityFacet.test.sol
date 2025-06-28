@@ -22,6 +22,31 @@ contract LiquidityFacetTests is Test, SetUp {
         super.setUp();
     }
 
+    function parseDecimal(uint256 number, uint8 numberDecimals, uint8 printDecimals)
+        internal
+        pure
+        returns (string memory)
+    {
+        uint256 base = 10 ** numberDecimals;
+        uint256 integerPart = number / base;
+
+        // Scale the fractional part to printDecimals
+        uint256 fracFull = number % base;
+        uint256 fracScaled = (fracFull * (10 ** printDecimals)) / base;
+
+        string memory paddedFraction = padFraction(fracScaled, printDecimals);
+        string memory formatted = string(abi.encodePacked(vm.toString(integerPart), ".", paddedFraction));
+        return formatted;
+    }
+
+    function padFraction(uint256 frac, uint8 decimals) internal pure returns (string memory) {
+        string memory padded = vm.toString(frac);
+        while (bytes(padded).length < decimals) {
+            padded = string(abi.encodePacked("0", padded));
+        }
+        return padded;
+    }
+
     function test_createPool() public {
         vm.startBroadcast(owner.addr);
         address tokenA = address(mockUSD);
@@ -53,8 +78,8 @@ contract LiquidityFacetTests is Test, SetUp {
         LiquidityStorageLib.PoolState memory state = liquidityFacet.getPoolState(poolId);
 
         console.log("\n========= Initial Liquidity =========");
-        console.log("Alice ETH: ", aliceETHBalance / 1e18);
-        console.log("Alice USD: ", aliceUSDBalance / 1e18);
+        console.log("Alice ETH: ", parseDecimal(aliceETHBalance, 18, 4));
+        console.log("Alice USD: ", parseDecimal(aliceUSDBalance, 18, 2));
 
         // Approve
         mockUSD.approve(address(liquidityFacet), 2500 ether);
@@ -67,11 +92,11 @@ contract LiquidityFacetTests is Test, SetUp {
             string(
                 abi.encodePacked(
                     "Liquidity Added with: ",
-                    (amountA / 1e18).toString(),
+                    parseDecimal(amountA, 18, 4),
                     " ETH and ",
-                    (amountB / 1e18).toString(),
+                    parseDecimal(amountB, 18, 2),
                     " USD. Got ",
-                    (liquidity / 1e18).toString(),
+                    parseDecimal(liquidity, 18, 2),
                     " LP Tokens"
                 )
             )
@@ -80,11 +105,11 @@ contract LiquidityFacetTests is Test, SetUp {
             string(
                 abi.encodePacked(
                     "Current Pool Reserver: ",
-                    (state.reserveA / 1e18).toString(),
+                    parseDecimal(state.reserveA, 18, 4),
                     " ETH and ",
-                    (state.reserveB / 1e18).toString(),
+                    parseDecimal(state.reserveB, 18, 2),
                     " USD. Total LP Tokens: ",
-                    (state.totalLPTokens / 1e18).toString()
+                    parseDecimal(state.totalLPTokens, 18, 2)
                 )
             )
         );
@@ -92,25 +117,32 @@ contract LiquidityFacetTests is Test, SetUp {
         aliceETHBalance = mockETH.balanceOf(alice.addr);
         aliceUSDBalance = mockUSD.balanceOf(alice.addr);
 
-        console.log("Alice ETH: ", aliceETHBalance / 1e18);
-        console.log("Alice USD: ", aliceUSDBalance / 1e18);
+        console.log("Alice ETH: ", parseDecimal(aliceETHBalance, 18, 4));
+        console.log("Alice USD: ", parseDecimal(aliceUSDBalance, 18, 2));
 
         // Add Liquidity one more time
-        mockUSD.approve(address(liquidityFacet), 5000 ether);
-        mockETH.approve(address(liquidityFacet), 2 ether);
+        mockUSD.approve(address(liquidityFacet), 2500 ether);
+        mockETH.approve(address(liquidityFacet), 1 ether);
+        vm.stopBroadcast();
+
+        vm.startBroadcast(owner.addr);
+        mockPriceFeed.setPrice(2450e8);
+        vm.stopBroadcast();
+
+        vm.startBroadcast(alice.addr);
 
         console.log("\n========= Second Liquidity =========");
-        (amountA, amountB, liquidity) = liquidityFacet.addLiquidity(poolId, 2 ether, 5000 ether);
+        (amountA, amountB, liquidity) = liquidityFacet.addLiquidity(poolId, 1 ether, 2500 ether);
         state = liquidityFacet.getPoolState(poolId);
         console.log(
             string(
                 abi.encodePacked(
                     "Liquidity Added with: ",
-                    (amountA / 1e18).toString(),
+                    parseDecimal(amountA, 18, 4),
                     " ETH and ",
-                    (amountB / 1e18).toString(),
+                    parseDecimal(amountB, 18, 2),
                     " USD. Got ",
-                    (liquidity / 1e18).toString(),
+                    parseDecimal(liquidity, 18, 2),
                     " LP Tokens"
                 )
             )
@@ -119,11 +151,11 @@ contract LiquidityFacetTests is Test, SetUp {
             string(
                 abi.encodePacked(
                     "Current Pool Reserver: ",
-                    (state.reserveA / 1e18).toString(),
+                    parseDecimal(state.reserveA, 18, 4),
                     " ETH and ",
-                    (state.reserveB / 1e18).toString(),
+                    parseDecimal(state.reserveB, 18, 2),
                     " USD. Total LP Tokens: ",
-                    (state.totalLPTokens / 1e18).toString()
+                    parseDecimal(state.totalLPTokens, 18, 2)
                 )
             )
         );
@@ -131,8 +163,8 @@ contract LiquidityFacetTests is Test, SetUp {
         aliceETHBalance = mockETH.balanceOf(alice.addr);
         aliceUSDBalance = mockUSD.balanceOf(alice.addr);
 
-        console.log("Alice ETH: ", aliceETHBalance / 1e18);
-        console.log("Alice USD: ", aliceUSDBalance / 1e18);
+        console.log("Alice ETH: ", parseDecimal(aliceETHBalance, 18, 4));
+        console.log("Alice USD: ", parseDecimal(aliceUSDBalance, 18, 2));
 
         vm.stopBroadcast();
     }

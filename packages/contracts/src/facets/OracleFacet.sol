@@ -5,6 +5,8 @@ import {OracleStorageLib} from "../libraries/OracleStorage.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
+import {OwnershipFacet} from "../facets/OwnershipFacet.sol";
+
 contract OracleFacet {
     error PriceFeedNotFound();
     error VolatilityFeedNotFound();
@@ -26,7 +28,7 @@ contract OracleFacet {
 
     function getLatestVolatility(bytes8 poolId) public view returns (uint256) {
         OracleStorageLib.OracleStorage storage os = OracleStorageLib.oracleStorage();
-        AggregatorV3Interface volatilityFeed = AggregatorV3Interface(os.priceFeedAggregators[poolId]);
+        AggregatorV3Interface volatilityFeed = AggregatorV3Interface(os.volatilityAggregators[poolId]);
         if (address(volatilityFeed) == address(0)) {
             revert VolatilityFeedNotFound();
         }
@@ -36,5 +38,13 @@ contract OracleFacet {
         uint256 casted = SafeCast.toUint256(answer);
         uint256 answerWith18 = (casted * (10 ** (18 - feedDecimals)));
         return answerWith18;
+    }
+
+    function addFeed(bytes8 poolId, address priceFeed, address volatilityFeed) public {
+        OracleStorageLib.OracleStorage storage os = OracleStorageLib.oracleStorage();
+        OwnershipFacet(os.itoProxy).enforceContractOwner();
+
+        os.priceFeedAggregators[poolId] = priceFeed;
+        os.volatilityAggregators[poolId] = volatilityFeed;
     }
 }

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {Test, console2 as console, Vm} from "forge-std/Test.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
 library StochasticMath {
@@ -23,23 +24,28 @@ library StochasticMath {
         uint256 reserveA,
         uint256 reserveB,
         uint256 volatility,
+        uint256 price,
         uint256 amountADesired,
         uint256 amountBDesired
     ) internal pure returns (uint256 amountA, uint256 amountB) {
         if (reserveA == 0 && reserveB == 0) {
             // Initial liquidity - use desired amounts
-            // TODO: Think about this case
             return (amountADesired, amountBDesired);
         }
 
-        // Convert volatility to fixed-point (0-1)
+        // Volatility is in percentage (0-100) in 18 decimals
         uint256 sigma = volatility;
 
         // Calculate current ratio with precision
         uint256 currentRatio = (reserveA * PRECISION) / reserveB;
-        uint256 oracleRatio = 2450;
+        console.log("Current Ratio: ", currentRatio);
+        uint256 oracleRatio = PRECISION_SQR / price;
+        console.log("Current Price: ", price);
+        console.log("Oracle Ratio: ", oracleRatio);
 
-        uint256 targetRatio = (sigma * currentRatio + (PRECISION - sigma) * oracleRatio) / PRECISION;
+        // adjustedRatio = (σ * currentRatio + (1 - σ) * oracleRatio)
+        uint256 targetRatio = (sigma * currentRatio + ((PRECISION) - sigma) * oracleRatio) / PRECISION;
+        console.log("Target Ratio: ", targetRatio);
 
         // Calculate optimal tokenB for desired tokenA
         uint256 amountBOptimal = (amountADesired * PRECISION) / targetRatio;
