@@ -53,6 +53,7 @@ contract LiquidityFacetTests is Test, SetUp {
         address tokenB = address(mockETH);
         uint256 baseRewardRate = 100;
         bytes8 poolId = liquidityFacet.createPool(tokenA, tokenB, baseRewardRate);
+        assert(poolId != bytes8(0));
         vm.stopBroadcast();
     }
 
@@ -80,7 +81,7 @@ contract LiquidityFacetTests is Test, SetUp {
 
         LiquidityStorageLib.PoolState memory state = liquidityFacet.getPoolState(poolId);
 
-        console.log("\n========= Initial Liquidity =========");
+        console.log("\n========= Adding Initial Liquidity =========");
         console.log("Alice ETH: ", parseDecimal(aliceETHBalance, 18, 4));
         console.log("Alice USD: ", parseDecimal(aliceUSDBalance, 18, 2));
         console.log("Alice ITO: ", parseDecimal(aliceItoBalance, 18, 2));
@@ -108,7 +109,7 @@ contract LiquidityFacetTests is Test, SetUp {
         console.log(
             string(
                 abi.encodePacked(
-                    "Current Pool Reserver: ",
+                    "Current Pool State: ",
                     parseDecimal(state.reserveA, 18, 4),
                     " ETH and ",
                     parseDecimal(state.reserveB, 18, 2),
@@ -127,6 +128,7 @@ contract LiquidityFacetTests is Test, SetUp {
         console.log("Alice ITO: ", parseDecimal(aliceItoBalance, 18, 2));
 
         vm.warp(block.timestamp + 7 days);
+        console.log("\n============== After 7 Days ==============");
 
         // Add Liquidity one more time
         mockUSD.approve(address(liquidityFacet), 2500 ether);
@@ -135,6 +137,7 @@ contract LiquidityFacetTests is Test, SetUp {
 
         vm.startBroadcast(owner.addr);
         mockPriceFeed.setPrice(2450e8);
+        console.log("\nETH Drops to $2450");
         vm.stopBroadcast();
 
         vm.startBroadcast(alice.addr);
@@ -158,7 +161,7 @@ contract LiquidityFacetTests is Test, SetUp {
         console.log(
             string(
                 abi.encodePacked(
-                    "Current Pool Reserver: ",
+                    "Current Pool State: ",
                     parseDecimal(state.reserveA, 18, 4),
                     " ETH and ",
                     parseDecimal(state.reserveB, 18, 2),

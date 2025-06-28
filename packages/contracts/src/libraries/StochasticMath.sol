@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test, console2 as console, Vm} from "forge-std/Test.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {Trigonometry} from "./Trig.sol";
 
 library StochasticMath {
     using Math for uint256;
 
     // Fixed-point precision (18 decimals)
     uint256 internal constant PRECISION = 1e18;
+    uint256 internal constant HALF_PRECISION = 5e17;
     uint256 internal constant PRECISION_SQR = 1e36;
+    uint256 internal constant LOG2_E = 1442695040888963407;
+    uint256 internal constant EPSILON = 1; // To avoid ln(0)
 
     /// @notice Calculates the amount of token A and token B that should be
     /// added to reserveA and reserveB to achieve a desired amount of liquidity
@@ -38,14 +41,10 @@ library StochasticMath {
 
         // Calculate current ratio with precision
         uint256 currentRatio = (reserveA * PRECISION) / reserveB;
-        console.log("Current Ratio: ", currentRatio);
         uint256 oracleRatio = PRECISION_SQR / price;
-        console.log("Current Price: ", price);
-        console.log("Oracle Ratio: ", oracleRatio);
 
         // adjustedRatio = (σ * currentRatio + (1 - σ) * oracleRatio)
         uint256 targetRatio = (sigma * currentRatio + ((PRECISION) - sigma) * oracleRatio) / PRECISION;
-        console.log("Target Ratio: ", targetRatio);
 
         // Calculate optimal tokenB for desired tokenA
         uint256 amountBOptimal = (amountADesired * PRECISION) / targetRatio;
@@ -82,29 +81,132 @@ library StochasticMath {
             / PRECISION;
     }
 
-    // function calculatePendingRewards(
-    //     uint256 userLPTokens,
-    //     uint256 accRewardPerShare,
-    //     uint256 rewardDebt,
-    //     uint256 lastInteraction,
-    //     uint256 baseRewardRate,
-    //     uint256 volatility
-    // ) internal view returns (uint256 pending) {
-    //     // Calculate base pending rewards from pool accumulation
-    //     uint256 poolPending = ((userLPTokens * accRewardPerShare) / PRECISION) - rewardDebt;
+    /// @notice Finds the zero-based index of the first one in the binary representation of x.
+    /// @dev See the note on msb in the "Find First Set" Wikipedia article https://en.wikipedia.org/wiki/Find_first_set
+    /// @param x The uint256 number for which to find the index of the most significant bit.
+    /// @return msb The index of the most significant bit as an uint256.
+    function mostSignificantBit(uint256 x) internal pure returns (uint256 msb) {
+        if (x >= 2 ** 128) {
+            x >>= 128;
+            msb += 128;
+        }
+        if (x >= 2 ** 64) {
+            x >>= 64;
+            msb += 64;
+        }
+        if (x >= 2 ** 32) {
+            x >>= 32;
+            msb += 32;
+        }
+        if (x >= 2 ** 16) {
+            x >>= 16;
+            msb += 16;
+        }
+        if (x >= 2 ** 8) {
+            x >>= 8;
+            msb += 8;
+        }
+        if (x >= 2 ** 4) {
+            x >>= 4;
+            msb += 4;
+        }
+        if (x >= 2 ** 2) {
+            x >>= 2;
+            msb += 2;
+        }
+        if (x >= 2 ** 1) {
+            // No need to shift x any more.
+            msb += 1;
+        }
+    }
+    /// @notice Calculates the binary logarithm of x.
+    ///
+    /// @dev Based on the iterative approximation algorithm.
+    /// https://en.wikipedia.org/wiki/Binary_logarithm#Iterative_approximation
+    ///
+    /// Requirements:
+    /// - x must be greater than zero.
+    ///
+    /// Caveats:
+    /// - The results are nor perfectly accurate to the last digit, due to the lossy precision of the iterative approximation.
+    ///
+    /// @param x The signed 59.18-decimal fixed-point number for which to calculate the binary logarithm.
+    /// @return result The binary logarithm as a signed 59.18-decimal fixed-point number.
 
-    //     // Calculate time-based rewards since last interaction
-    //     uint256 timeElapsed = block.timestamp - lastInteraction;
-    //     uint256 rewards = timeElapsed * config.baseRewardRate;
+    function log2(int256 x) internal pure returns (int256 result) {
+        require(x > 0);
+        unchecked {
+            // This works because log2(x) = -log2(1/x).
+            int256 sign;
+            if (x >= int256(PRECISION)) {
+                sign = 1;
+            } else {
+                sign = -1;
+                // Do the fixed-point inversion inline to save gas. The numerator is PRECISION * PRECISION.
+                assembly {
+                    x := div(1000000000000000000000000000000000000, x)
+                }
+            }
 
-    //     // Apply volatility multiplier
-    //     uint256 adjustedRewards = (rewards * (PRECISION + volatility / 2)) / PRECISION;
-    //     accRewardPerShare += (adjustedRewards * LibStochasticMath.PRECISION) / totalLPTokens;
+            // Calculate the integer part of the logarithm and add it to the result and finally calculate y = x * 2^(-n).
+            uint256 n = mostSignificantBit(uint256(x / int256(PRECISION)));
 
-    //     // Apply volatility multiplier (higher volatility = more rewards)
-    //     uint256 volatilityMultiplier = PRECISION + (volatility / 2); // 50% bonus at 100% volatility
-    //     uint256 adjustedRewards = (timeBasedRewards * volatilityMultiplier) / PRECISION;
+            // The integer part of the logarithm as a signed 59.18-decimal fixed-point number. The operation can't overflow
+            // because n is maximum 255, PRECISION is 1e18 and sign is either 1 or -1.
+            result = int256(n) * int256(PRECISION);
 
-    //     pending = poolPending + timeBasedRewards;
-    // }
+            // This is y = x * 2^(-n).
+            int256 y = x >> n;
+
+            // If y = 1, the fractional part is zero.
+            if (y == int256(PRECISION)) {
+                return result * sign;
+            }
+
+            // Calculate the fractional part via the iterative approximation.
+            // The "delta >>= 1" part is equivalent to "delta /= 2", but shifting bits is faster.
+            for (int256 delta = int256(HALF_PRECISION); delta > 0; delta >>= 1) {
+                y = (y * y) / int256(PRECISION);
+
+                // Is y^2 > 2 and so in the range [2,4)?
+                if (y >= 2 * int256(PRECISION)) {
+                    // Add the 2^(-m) factor to the logarithm.
+                    result += delta;
+
+                    // Corresponds to z/2 on Wikipedia.
+                    y >>= 1;
+                }
+            }
+            result *= sign;
+        }
+    }
+
+    function ln(int256 x) internal pure returns (int256 result) {
+        // Do the fixed-point multiplication inline to save gas. This is overflow-safe because the maximum value that log2(x)
+        // can return is 195205294292027477728.
+        unchecked {
+            result = (log2(x) * int256(PRECISION)) / int256(LOG2_E);
+        }
+    }
+
+    function _boxMullerTransform(uint256 r1, uint256 r2) internal pure returns (int256 z0, int256 z1) {
+        // Step 1: Convert to uniform [0, 1) by modding and scaling
+        uint256 u1 = (r1 % (PRECISION - 1)) + EPSILON; // Ensure u1 ≠ 0
+        uint256 u2 = r2 % PRECISION;
+
+        // Step 2: Compute ln(u1)
+        int256 lnU1 = ln(int256(u1)); // returns negative number
+
+        // Step 3: Compute sqrt(-2 * ln(u1))
+        // -2 * ln(u1) = -2e18 * lnU1 / 1e18 = -2 * lnU1
+        uint256 mag = Math.sqrt(uint256(int256(-2) * lnU1)); // magnitude = sqrt(-2 ln(u1))
+
+        // Step 4: Compute angle = 2π * u2
+        uint256 theta = (Trigonometry.PI * 2 * u2) / PRECISION;
+
+        // Step 5: z0 = mag * cos(theta), z1 = mag * sin(theta)
+        // Result is in normal distribution space
+        int256 normZ0 = int256(mag) * int256(Trigonometry.cos(theta)) / int256(PRECISION);
+        int256 normZ1 = int256(mag) * int256(Trigonometry.sin(theta)) / int256(PRECISION);
+    }
 }

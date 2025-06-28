@@ -250,7 +250,6 @@ contract LiquidityFacet is ReentrancyGuard {
             uint256 timeElapsed = block.timestamp - state.lastUpdate;
             uint256 rewards = timeElapsed * config.baseRewardRate;
 
-            // Apply volatility multiplier (50-150% based on market conditions)
             uint256 volatility = _getVolatility(poolId);
             uint256 adjustedRewards = (rewards * (StochasticMath.PRECISION + volatility / 2)) / StochasticMath.PRECISION;
             state.accRewardPerShare += (adjustedRewards * StochasticMath.PRECISION) / state.totalLPTokens;
