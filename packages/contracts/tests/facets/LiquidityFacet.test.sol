@@ -53,7 +53,6 @@ contract LiquidityFacetTests is Test, SetUp {
         address tokenB = address(mockETH);
         uint256 baseRewardRate = 100;
         bytes8 poolId = liquidityFacet.createPool(tokenA, tokenB, baseRewardRate);
-        console.logBytes8(poolId);
         vm.stopBroadcast();
     }
 
@@ -62,14 +61,18 @@ contract LiquidityFacetTests is Test, SetUp {
         vm.startBroadcast(owner.addr);
         address tokenA = address(mockETH);
         address tokenB = address(mockUSD);
-        uint256 baseRewardRate = 100;
-        bytes8 poolId = liquidityFacet.createPool(tokenA, tokenB, baseRewardRate);
-        console.logBytes8(poolId);
+        bytes8 poolId = liquidityFacet.createPool(tokenA, tokenB, 0);
+        // Add Rewards Pool
+        // 100_000 ITO Tokens for 1 Year
+        uint256 distributionPeriod = 365 days;
+        itoToken.approve(address(liquidityFacet), 100_000 ether);
+        liquidityFacet.fundRewards(poolId, 100_000 ether, distributionPeriod);
         vm.stopBroadcast();
 
         vm.startBroadcast(alice.addr);
         uint256 aliceETHBalance = mockETH.balanceOf(alice.addr);
         uint256 aliceUSDBalance = mockUSD.balanceOf(alice.addr);
+        uint256 aliceItoBalance = itoToken.balanceOf(alice.addr);
 
         uint256 amountA = 0;
         uint256 amountB = 0;
@@ -80,6 +83,7 @@ contract LiquidityFacetTests is Test, SetUp {
         console.log("\n========= Initial Liquidity =========");
         console.log("Alice ETH: ", parseDecimal(aliceETHBalance, 18, 4));
         console.log("Alice USD: ", parseDecimal(aliceUSDBalance, 18, 2));
+        console.log("Alice ITO: ", parseDecimal(aliceItoBalance, 18, 2));
 
         // Approve
         mockUSD.approve(address(liquidityFacet), 2500 ether);
@@ -116,9 +120,13 @@ contract LiquidityFacetTests is Test, SetUp {
 
         aliceETHBalance = mockETH.balanceOf(alice.addr);
         aliceUSDBalance = mockUSD.balanceOf(alice.addr);
+        aliceItoBalance = itoToken.balanceOf(alice.addr);
 
         console.log("Alice ETH: ", parseDecimal(aliceETHBalance, 18, 4));
         console.log("Alice USD: ", parseDecimal(aliceUSDBalance, 18, 2));
+        console.log("Alice ITO: ", parseDecimal(aliceItoBalance, 18, 2));
+
+        vm.warp(block.timestamp + 7 days);
 
         // Add Liquidity one more time
         mockUSD.approve(address(liquidityFacet), 2500 ether);
@@ -162,9 +170,11 @@ contract LiquidityFacetTests is Test, SetUp {
 
         aliceETHBalance = mockETH.balanceOf(alice.addr);
         aliceUSDBalance = mockUSD.balanceOf(alice.addr);
+        aliceItoBalance = itoToken.balanceOf(alice.addr);
 
         console.log("Alice ETH: ", parseDecimal(aliceETHBalance, 18, 4));
         console.log("Alice USD: ", parseDecimal(aliceUSDBalance, 18, 2));
+        console.log("Alice ITO: ", parseDecimal(aliceItoBalance, 18, 2));
 
         vm.stopBroadcast();
     }

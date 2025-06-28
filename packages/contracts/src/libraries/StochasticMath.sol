@@ -82,25 +82,29 @@ library StochasticMath {
             / PRECISION;
     }
 
-    function calculatePendingRewards(
-        uint256 userLPTokens,
-        uint256 accRewardPerShare,
-        uint256 rewardDebt,
-        uint256 lastInteraction,
-        uint256 baseRewardRate,
-        uint256 volatility
-    ) internal view returns (uint256 pending) {
-        // Calculate base pending rewards from pool accumulation
-        uint256 poolPending = ((userLPTokens * accRewardPerShare) / PRECISION) - rewardDebt;
+    // function calculatePendingRewards(
+    //     uint256 userLPTokens,
+    //     uint256 accRewardPerShare,
+    //     uint256 rewardDebt,
+    //     uint256 lastInteraction,
+    //     uint256 baseRewardRate,
+    //     uint256 volatility
+    // ) internal view returns (uint256 pending) {
+    //     // Calculate base pending rewards from pool accumulation
+    //     uint256 poolPending = ((userLPTokens * accRewardPerShare) / PRECISION) - rewardDebt;
 
-        // Calculate time-based rewards since last interaction
-        uint256 timeElapsed = block.timestamp - lastInteraction;
-        uint256 timeBasedRewards = (userLPTokens * baseRewardRate * timeElapsed) / PRECISION;
+    //     // Calculate time-based rewards since last interaction
+    //     uint256 timeElapsed = block.timestamp - lastInteraction;
+    //     uint256 rewards = timeElapsed * config.baseRewardRate;
 
-        // Apply volatility multiplier (higher volatility = more rewards)
-        uint256 volatilityMultiplier = PRECISION + (volatility / 2); // 50% bonus at 100% volatility
-        uint256 adjustedRewards = (timeBasedRewards * volatilityMultiplier) / PRECISION;
+    //     // Apply volatility multiplier
+    //     uint256 adjustedRewards = (rewards * (PRECISION + volatility / 2)) / PRECISION;
+    //     accRewardPerShare += (adjustedRewards * LibStochasticMath.PRECISION) / totalLPTokens;
 
-        pending = poolPending + adjustedRewards;
-    }
+    //     // Apply volatility multiplier (higher volatility = more rewards)
+    //     uint256 volatilityMultiplier = PRECISION + (volatility / 2); // 50% bonus at 100% volatility
+    //     uint256 adjustedRewards = (timeBasedRewards * volatilityMultiplier) / PRECISION;
+
+    //     pending = poolPending + timeBasedRewards;
+    // }
 }

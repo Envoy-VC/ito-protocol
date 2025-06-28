@@ -173,11 +173,12 @@ contract SetUp is Test {
         });
 
         // Liquidity Facet
-        bytes4[] memory liquiditySelectors = new bytes4[](4);
+        bytes4[] memory liquiditySelectors = new bytes4[](5);
         liquiditySelectors[0] = LiquidityFacet.createPool.selector;
         liquiditySelectors[1] = LiquidityFacet.addLiquidity.selector;
         liquiditySelectors[2] = LiquidityFacet.removeLiquidity.selector;
         liquiditySelectors[3] = LiquidityFacet.getPoolState.selector;
+        liquiditySelectors[4] = LiquidityFacet.fundRewards.selector;
         facetCuts[3] = IDiamondCut.FacetCut({
             facetAddress: address(_liquidityFacet),
             action: IDiamondCut.FacetCutAction.Add,
@@ -229,5 +230,8 @@ contract SetUp is Test {
         mockUSD.mint(alice.addr, 10_000 ether);
         mockUSD.mint(bob.addr, 10_000 ether);
         mockUSD.mint(charlie.addr, 10_000 ether);
+
+        // Mint ITO to Owner
+        itoToken.mint(owner.addr, 1_000_000 ether);
     }
 }

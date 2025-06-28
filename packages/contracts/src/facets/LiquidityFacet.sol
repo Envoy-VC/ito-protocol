@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {console2 as console} from "forge-std/console2.sol";
+
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -54,9 +56,38 @@ contract LiquidityFacet is ReentrancyGuard {
             version: ls.version
         });
 
+        // Initialize pool state
+        ls.poolStates[poolId] = LiquidityStorageLib.PoolState({
+            reserveA: 0,
+            reserveB: 0,
+            totalLPTokens: 0,
+            lastUpdate: block.timestamp,
+            accRewardPerShare: 0
+        });
+
         emit PoolCreated(poolId, tokenA, tokenB);
 
         return poolId;
+    }
+
+    function fundRewards(bytes8 poolId, uint256 amount, uint256 distributionPeriod) public {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        LiquidityStorageLib.PoolConfig storage poolConfig = ls.poolConfigs[poolId];
+
+        // Valid Pool
+        if (!LiquidityStorageLib.poolExists(poolId)) {
+            revert PoolNotFound(poolId);
+        }
+
+        // When Not Paused
+        EmergencyFacet(ls.itoProxy).whenNotPaused();
+        // Only Owner
+        OwnershipFacet(ls.itoProxy).enforceContractOwner();
+
+        // Transfer reward tokens from sender
+        IERC20(ls.rewardToken).safeTransferFrom(msg.sender, address(this), amount);
+
+        poolConfig.baseRewardRate += amount / distributionPeriod;
     }
 
     function addLiquidity(bytes8 poolId, uint256 amountADesired, uint256 amountBDesired)
@@ -177,35 +208,85 @@ contract LiquidityFacet is ReentrancyGuard {
         emit LiquidityRemoved(msg.sender, poolId, amountA, amountB, liquidity);
     }
 
-    function _claimRewards(bytes8 poolId, address user) internal {
+    function _claimRewards(bytes8 poolId, address user) public {
         LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
-
-        LiquidityStorageLib.PoolConfig storage poolConfig = ls.poolConfigs[poolId];
-        LiquidityStorageLib.PoolState storage poolState = ls.poolStates[poolId];
-        LiquidityStorageLib.UserPosition storage userPosition = ls.userPositions[msg.sender][poolId];
 
         // Fetch current volatility from oracle
         uint256 volatility = _getVolatility(poolId);
-
-        // Calculate pending rewards
-        uint256 pending = StochasticMath.calculatePendingRewards(
-            userPosition.lpTokens,
-            poolState.accRewardPerShare,
-            userPosition.rewardDebt,
-            userPosition.lastInteraction,
-            poolConfig.baseRewardRate,
-            volatility
-        );
+        uint256 pending = _calculatePendingRewards(poolId, msg.sender, volatility);
 
         if (pending > 0) {
-            // Update reward debt
-            userPosition.rewardDebt = (userPosition.lpTokens * poolState.accRewardPerShare) / StochasticMath.PRECISION;
-            userPosition.lastInteraction = block.timestamp;
+            _updateUserRewardState(poolId, msg.sender);
+            uint256 volatilityBonus = (pending * volatility) / (2 * StochasticMath.PRECISION);
+            uint256 totalReward = pending + volatilityBonus;
 
-            // Transfer rewards
-            IERC20(ls.rewardToken).safeTransfer(user, pending);
-            emit RewardsClaimed(user, poolId, pending);
+            IERC20(ls.rewardToken).safeTransfer(user, totalReward);
+
+            emit RewardsClaimed(user, poolId, totalReward);
         }
+    }
+
+    function _updateUserRewardState(bytes8 poolId, address user) internal {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        LiquidityStorageLib.PoolState storage state = ls.poolStates[poolId];
+        LiquidityStorageLib.UserPosition storage position = ls.userPositions[user][poolId];
+
+        // Update global rewards
+        _updatePoolRewards(poolId);
+
+        // Update user's reward debt
+        position.rewardDebt = (position.lpTokens * state.accRewardPerShare) / StochasticMath.PRECISION;
+        position.lastInteraction = block.timestamp;
+    }
+
+    function _updatePoolRewards(bytes8 poolId) internal {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        LiquidityStorageLib.PoolConfig storage config = ls.poolConfigs[poolId];
+        LiquidityStorageLib.PoolState storage state = ls.poolStates[poolId];
+
+        if (block.timestamp <= state.lastUpdate) return;
+
+        if (state.totalLPTokens > 0) {
+            uint256 timeElapsed = block.timestamp - state.lastUpdate;
+            uint256 rewards = timeElapsed * config.baseRewardRate;
+
+            // Apply volatility multiplier (50-150% based on market conditions)
+            uint256 volatility = _getVolatility(poolId);
+            uint256 adjustedRewards = (rewards * (StochasticMath.PRECISION + volatility / 2)) / StochasticMath.PRECISION;
+            state.accRewardPerShare += (adjustedRewards * StochasticMath.PRECISION) / state.totalLPTokens;
+        }
+
+        state.lastUpdate = block.timestamp;
+    }
+
+    function pendingRewards(bytes8 poolId, address user) external view returns (uint256) {
+        uint256 volatility = _getVolatility(poolId);
+        return _calculatePendingRewards(poolId, user, volatility);
+    }
+
+    function _calculatePendingRewards(bytes8 poolId, address user, uint256 volatility)
+        internal
+        view
+        returns (uint256)
+    {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        LiquidityStorageLib.PoolConfig storage config = ls.poolConfigs[poolId];
+        LiquidityStorageLib.PoolState storage state = ls.poolStates[poolId];
+        LiquidityStorageLib.UserPosition storage position = ls.userPositions[user][poolId];
+
+        uint256 accRewardPerShare = state.accRewardPerShare;
+        uint256 totalLPTokens = state.totalLPTokens;
+
+        if (block.timestamp > state.lastUpdate && totalLPTokens > 0) {
+            uint256 timeElapsed = block.timestamp - state.lastUpdate;
+            uint256 rewards = timeElapsed * config.baseRewardRate;
+
+            // Apply volatility multiplier
+            uint256 adjustedRewards = (rewards * (StochasticMath.PRECISION + volatility / 2)) / StochasticMath.PRECISION;
+            accRewardPerShare += (adjustedRewards * StochasticMath.PRECISION) / totalLPTokens;
+        }
+
+        return (position.lpTokens * accRewardPerShare) / StochasticMath.PRECISION - position.rewardDebt;
     }
 
     function _getVolatility(bytes8 poolId) internal view returns (uint256) {
