@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {Test, console2 as console, Vm} from "forge-std/Test.sol";
+
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -35,6 +37,7 @@ contract LiquidityFacet is ReentrancyGuard {
     event RewardsClaimed(address indexed user, bytes8 indexed poolId, uint256 amount);
 
     function createPool(address tokenA, address tokenB, uint256 baseRewardRate) public returns (bytes8) {
+        console.log("Inside createPool");
         LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
 
         // When Not Paused
@@ -58,7 +61,11 @@ contract LiquidityFacet is ReentrancyGuard {
         return poolId;
     }
 
-    function addLiquidity(bytes8 poolId, uint256 amountADesired, uint256 amountBDesired) public nonReentrant {
+    function addLiquidity(bytes8 poolId, uint256 amountADesired, uint256 amountBDesired)
+        public
+        nonReentrant
+        returns (uint256 amountA, uint256 amountB, uint256 liquidity)
+    {
         LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
 
         // Valid Pool
@@ -80,7 +87,7 @@ contract LiquidityFacet is ReentrancyGuard {
         uint256 volatility = _getVolatility(poolId);
 
         // Calculate liquidity Amounts
-        (uint256 amountA, uint256 amountB) = StochasticMath.calculateLiquidity(
+        (amountA, amountB) = StochasticMath.calculateLiquidity(
             poolState.reserveA, poolState.reserveB, volatility, amountADesired, amountBDesired
         );
 
@@ -96,7 +103,7 @@ contract LiquidityFacet is ReentrancyGuard {
         IERC20(poolConfig.tokenA).safeTransferFrom(msg.sender, address(this), amountA);
         IERC20(poolConfig.tokenB).safeTransferFrom(msg.sender, address(this), amountB);
 
-        uint256 liquidity = StochasticMath.calculateLPTokens(
+        liquidity = StochasticMath.calculateLPTokens(
             poolState.totalLPTokens, poolState.reserveA, poolState.reserveB, amountA, amountB, volatility
         );
 
@@ -204,5 +211,11 @@ contract LiquidityFacet is ReentrancyGuard {
     function _getVolatility(bytes8 poolId) internal view returns (uint256 volatility) {
         // Demo purposes, use oracle Facet Here
         return 8 * 1e16; // 8% volatility
+    }
+
+    // View Functions
+    function getPoolState(bytes8 poolId) public view returns (LiquidityStorageLib.PoolState memory poolState) {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        poolState = ls.poolStates[poolId];
     }
 }

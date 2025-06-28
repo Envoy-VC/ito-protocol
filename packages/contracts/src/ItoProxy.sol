@@ -35,10 +35,11 @@ contract ItoProxy {
             functionSelectors: functionSelectors
         });
 
-        bytes4[] memory functionSelectors2 = new bytes4[](3);
+        bytes4[] memory functionSelectors2 = new bytes4[](4);
         functionSelectors2[0] = OwnershipFacet.owner.selector;
         functionSelectors2[1] = OwnershipFacet.transferOwnership.selector;
         functionSelectors2[2] = OwnershipFacet.acceptOwnership.selector;
+        functionSelectors2[3] = OwnershipFacet.enforceContractOwner.selector;
         cut[1] = IDiamondCut.FacetCut({
             facetAddress: _ownershipFacet,
             action: IDiamondCut.FacetCutAction.Add,

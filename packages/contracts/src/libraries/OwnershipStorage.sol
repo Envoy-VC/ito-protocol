@@ -29,7 +29,8 @@ library OwnershipStorageLib {
 
     function _enforceContractOwner() internal view {
         OwnershipStorage storage os = ownershipStorage();
-        if (msg.sender != os.owner) {
+
+        if (tx.origin != os.owner) {
             revert NotOwner();
         }
     }

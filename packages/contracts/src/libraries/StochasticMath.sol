@@ -37,20 +37,17 @@ library StochasticMath {
 
         // Calculate current ratio with precision
         uint256 currentRatio = (reserveA * PRECISION) / reserveB;
+        uint256 oracleRatio = 2450;
 
-        // Calculate desired ratio
-        uint256 desiredRatio = (amountADesired * PRECISION) / amountBDesired;
-
-        // Volatility-weighted ratio adjustment
-        uint256 adjustedRatio = (sigma * currentRatio + (PRECISION - sigma) * desiredRatio) / PRECISION;
+        uint256 targetRatio = (sigma * currentRatio + (PRECISION - sigma) * oracleRatio) / PRECISION;
 
         // Calculate optimal tokenB for desired tokenA
-        uint256 amountBOptimal = (amountADesired * PRECISION) / adjustedRatio;
+        uint256 amountBOptimal = (amountADesired * PRECISION) / targetRatio;
 
         if (amountBOptimal <= amountBDesired) {
             return (amountADesired, amountBOptimal);
         } else {
-            uint256 amountAOptimal = (amountBDesired * adjustedRatio) / PRECISION;
+            uint256 amountAOptimal = (amountBDesired * targetRatio) / PRECISION;
             return (amountAOptimal, amountBDesired);
         }
     }

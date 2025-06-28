@@ -100,6 +100,8 @@ contract SetUp is Test {
         mockUSD = new MockUSD(owner.addr);
         mockETH = new MockETH(owner.addr);
 
+        _fundAccounts();
+
         vm.stopBroadcast();
 
         __setUpDone = true;
@@ -153,10 +155,11 @@ contract SetUp is Test {
         });
 
         // Liquidity Facet
-        bytes4[] memory liquiditySelectors = new bytes4[](3);
+        bytes4[] memory liquiditySelectors = new bytes4[](4);
         liquiditySelectors[0] = LiquidityFacet.createPool.selector;
         liquiditySelectors[1] = LiquidityFacet.addLiquidity.selector;
         liquiditySelectors[2] = LiquidityFacet.removeLiquidity.selector;
+        liquiditySelectors[3] = LiquidityFacet.getPoolState.selector;
         facetCuts[3] = IDiamondCut.FacetCut({
             facetAddress: address(_liquidityFacet),
             action: IDiamondCut.FacetCutAction.Add,
@@ -175,5 +178,27 @@ contract SetUp is Test {
             address(itoInit),
             abi.encodeWithSelector(ItoInitializer.init.selector, treasury.addr, address(itoToken), address(itoProxy))
         );
+    }
+
+    function _fundAccounts() internal {
+        vm.deal(owner.addr, 100 ether);
+        vm.deal(treasury.addr, 100 ether);
+        vm.deal(alice.addr, 100 ether);
+        vm.deal(bob.addr, 100 ether);
+        vm.deal(charlie.addr, 100 ether);
+
+        // Mint 10 MockETH to All
+        mockETH.mint(owner.addr, 10 ether);
+        mockETH.mint(treasury.addr, 10 ether);
+        mockETH.mint(alice.addr, 10 ether);
+        mockETH.mint(bob.addr, 10 ether);
+        mockETH.mint(charlie.addr, 10 ether);
+
+        // Mint 10_000 MockUSD to All
+        mockUSD.mint(owner.addr, 10_000 ether);
+        mockUSD.mint(treasury.addr, 10_000 ether);
+        mockUSD.mint(alice.addr, 10_000 ether);
+        mockUSD.mint(bob.addr, 10_000 ether);
+        mockUSD.mint(charlie.addr, 10_000 ether);
     }
 }

@@ -101,11 +101,7 @@ library LiquidityStorageLib {
     /// @param data The input bytes32
     /// @return result The extracted 8 bytes, in network (big‑endian) order
     function last8bytes(bytes32 data) public pure returns (bytes8 result) {
-        assembly {
-            // Shift left by 24 bytes (24 * 8 bits = 192 bits), pushing the last 8 bytes to the MSB side;
-            // then shift right by 24 bytes to align them in the low 8 bytes of the 32-byte slot.
-            result := shr(192, shl(192, data))
-        }
+        return bytes8(uint64(uint256(data)));
     }
 
     /// @custom:future In future rewrite this to use bit-packed pool ids with a pool factory as used by Balancer
