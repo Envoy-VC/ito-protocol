@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test, console2 as console, Vm} from "forge-std/Test.sol";
-
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -12,6 +10,7 @@ import {LiquidityStorageLib} from "../libraries/LiquidityStorage.sol";
 
 import {EmergencyFacet} from "../facets/EmergencyFacet.sol";
 import {OwnershipFacet} from "../facets/OwnershipFacet.sol";
+import {OracleFacet} from "../facets/OracleFacet.sol";
 
 import {StochasticMath} from "../libraries/StochasticMath.sol";
 
@@ -37,7 +36,6 @@ contract LiquidityFacet is ReentrancyGuard {
     event RewardsClaimed(address indexed user, bytes8 indexed poolId, uint256 amount);
 
     function createPool(address tokenA, address tokenB, uint256 baseRewardRate) public returns (bytes8) {
-        console.log("Inside createPool");
         LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
 
         // When Not Paused
@@ -209,8 +207,8 @@ contract LiquidityFacet is ReentrancyGuard {
     }
 
     function _getVolatility(bytes8 poolId) internal view returns (uint256 volatility) {
-        // Demo purposes, use oracle Facet Here
-        return 8 * 1e16; // 8% volatility
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        return OracleFacet(ls.itoProxy).getLatestVolatility(poolId);
     }
 
     // View Functions

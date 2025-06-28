@@ -7,8 +7,5 @@
 [submodule "packages/contracts/lib/chainlink-evm"]
 	path = packages/contracts/lib/chainlink-evm
 	url = https://github.com/smartcontractkit/chainlink-evm
-[submodule "packages/contracts/lib/prb-math"]
-	path = packages/contracts/lib/prb-math
-	url = https://github.com/PaulRBerg/prb-math
 [submodule "lib/prb-math"]
 	branch = release-v4
