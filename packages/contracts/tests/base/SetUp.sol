@@ -16,7 +16,7 @@ import {TreasuryFacet} from "src/facets/TreasuryFacet.sol";
 import {OracleFacet} from "src/facets/OracleFacet.sol";
 import {SAMMFacet} from "src/facets/SAMMFacet.sol";
 
-import {VRFCoordinatorV2Mock} from "src/mocks/MockVRFCoordinator.sol";
+import {VRFCoordinatorV2_5Mock} from "src/mocks/MockVRFCoordinator.sol";
 
 // Initializers
 import {ItoInitializer} from "src/initializers/ItoInitializer.sol";
@@ -68,7 +68,7 @@ contract SetUp is Test {
     MockETH public mockETH;
     MockPriceFeed public mockPriceFeed;
     MockVolatilityFeed public mockVolatilityFeed;
-    VRFCoordinatorV2Mock public vrfCoordinator;
+    VRFCoordinatorV2_5Mock public vrfCoordinator;
 
     // Initializers
     ItoInitializer public itoInit;
@@ -136,9 +136,10 @@ contract SetUp is Test {
         DiamondCutFacet cut = DiamondCutFacet(_proxyAddress);
 
         // Deploy Mock Coordinator And Create Subscription
-        VRFCoordinatorV2Mock _vrfCoordinator = new VRFCoordinatorV2Mock(100000000000000000, 1000000000);
-        uint64 subscriptionId = _vrfCoordinator.createSubscription();
-        _vrfCoordinator.fundSubscription(subscriptionId, 1000000000000000000);
+        VRFCoordinatorV2_5Mock _vrfCoordinator =
+            new VRFCoordinatorV2_5Mock(100000000000000000, 1000000000, 5452625900000000);
+        uint256 subscriptionId = _vrfCoordinator.createSubscription();
+        _vrfCoordinator.fundSubscription(subscriptionId, 100000000000000000000);
 
         // Deploy Facets
         DiamondLoupeFacet _diamondLoupeFacet = new DiamondLoupeFacet();
@@ -154,7 +155,7 @@ contract SetUp is Test {
 
         // Add Consumer to Coordinator
         _vrfCoordinator.addConsumer(subscriptionId, address(itoProxy));
-        vrfCoordinator = VRFCoordinatorV2Mock(address(_vrfCoordinator));
+        vrfCoordinator = VRFCoordinatorV2_5Mock(address(_vrfCoordinator));
 
         // Prepare diamond cut data
         IDiamondCut.FacetCut[] memory facetCuts = new IDiamondCut.FacetCut[](6);

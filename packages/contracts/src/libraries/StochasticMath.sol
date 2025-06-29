@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
-import {Trigonometry} from "./Trig.sol";
 
 library StochasticMath {
     using Math for uint256;
@@ -13,6 +12,8 @@ library StochasticMath {
     uint256 internal constant PRECISION_SQR = 1e36;
     uint256 internal constant LOG2_E = 1442695040888963407;
     uint256 internal constant EPSILON = 1; // To avoid ln(0)
+    uint256 private constant P_LOW = 24250000000000000; // 0.02425 * 1e18
+    uint256 private constant P_HIGH = PRECISION - P_LOW;
 
     /// @notice Calculates the amount of token A and token B that should be
     /// added to reserveA and reserveB to achieve a desired amount of liquidity
@@ -81,6 +82,88 @@ library StochasticMath {
             / PRECISION;
     }
 
+    function coeffA(uint256 i) private pure returns (int256) {
+        if (i == 0) return -39696830286653760000;
+        if (i == 1) return 220946098424520500000;
+        if (i == 2) return -275928510446968700000;
+        if (i == 3) return 138357751867269000000;
+        if (i == 4) return -30664798066147160000;
+        return 2506628277459239000; // i==5
+    }
+
+    function coeffB(uint256 i) private pure returns (int256) {
+        if (i == 0) return -54476098798224060000;
+        if (i == 1) return 161585836858040900000;
+        if (i == 2) return -155698979859886600000;
+        if (i == 3) return 66801311887719720000;
+        return -13280681552885720000;
+    }
+
+    function coeffC(uint256 i) private pure returns (int256) {
+        if (i == 0) return -7784894002430293;
+        if (i == 1) return -322396458041136500;
+        if (i == 2) return -2400758277161838000;
+        if (i == 3) return -2549732539343734000;
+        if (i == 4) return 4374664141464968000;
+        return 2938163982698783000;
+    }
+
+    function coeffD(uint256 i) private pure returns (int256) {
+        if (i == 0) return 7784695709041460;
+        if (i == 1) return 322467129070039800;
+        if (i == 2) return 2445134137142996000;
+        return 3754408661907416000;
+    }
+
+    /// @notice Core Acklam inverse CDF
+    function probit(int256 u) public pure returns (int256) {
+        require(u > 0 && uint256(u) < PRECISION, "u out-of-range");
+
+        bool lower = uint256(u) < P_LOW;
+        int256 x;
+        if (lower || uint256(u) > P_HIGH) {
+            uint256 r = lower ? uint256(u) : (PRECISION - uint256(u));
+            int256 lt = ln(int256(r));
+            uint256 q = sqrt(uint256(-2 * lt));
+            x = evalTail(int256(q));
+            if (lower) x = -x;
+        } else {
+            int256 q = u - int256(PRECISION / 2);
+            uint256 r = uint256((q * q) / int256(PRECISION));
+            x = evalCentral(q, r);
+        }
+        return x;
+    }
+
+    function evalCentral(int256 q, uint256 r) private pure returns (int256) {
+        int256 num = coeffA(5);
+        for (uint256 i = 5; i > 0; i--) {
+            num = (num * int256(r)) / int256(PRECISION) + coeffA(i - 1);
+        }
+        num = (num * q) / int256(PRECISION);
+
+        int256 den = coeffB(4);
+        for (uint256 i = 4; i > 0; i--) {
+            den = (den * int256(r)) / int256(PRECISION) + coeffB(i - 1);
+        }
+        den += int256(PRECISION);
+        return (num * int256(PRECISION)) / den;
+    }
+
+    function evalTail(int256 q) private pure returns (int256) {
+        int256 num = coeffC(5);
+        for (uint256 i = 5; i > 0; i--) {
+            num = (num * q) / int256(PRECISION) + coeffC(i - 1);
+        }
+
+        int256 den = coeffD(3);
+        for (uint256 i = 3; i > 0; i--) {
+            den = (den * q) / int256(PRECISION) + coeffD(i - 1);
+        }
+        den += int256(PRECISION);
+        return (q * num * int256(PRECISION)) / (den * int256(PRECISION));
+    }
+
     /// @notice Finds the zero-based index of the first one in the binary representation of x.
     /// @dev See the note on msb in the "Find First Set" Wikipedia article https://en.wikipedia.org/wiki/Find_first_set
     /// @param x The uint256 number for which to find the index of the most significant bit.
@@ -134,7 +217,7 @@ library StochasticMath {
     /// @return result The binary logarithm as a signed 59.18-decimal fixed-point number.
 
     function log2(int256 x) internal pure returns (int256 result) {
-        require(x > 0);
+        require(x > 0, "x must be greater than zero");
         unchecked {
             // This works because log2(x) = -log2(1/x).
             int256 sign;
@@ -189,24 +272,7 @@ library StochasticMath {
         }
     }
 
-    function _boxMullerTransform(uint256 r1, uint256 r2) internal pure returns (int256 z0, int256 z1) {
-        // Step 1: Convert to uniform [0, 1) by modding and scaling
-        uint256 u1 = (r1 % (PRECISION - 1)) + EPSILON; // Ensure u1 ≠ 0
-        uint256 u2 = r2 % PRECISION;
-
-        // Step 2: Compute ln(u1)
-        int256 lnU1 = ln(int256(u1)); // returns negative number
-
-        // Step 3: Compute sqrt(-2 * ln(u1))
-        // -2 * ln(u1) = -2e18 * lnU1 / 1e18 = -2 * lnU1
-        uint256 mag = Math.sqrt(uint256(int256(-2) * lnU1)); // magnitude = sqrt(-2 ln(u1))
-
-        // Step 4: Compute angle = 2π * u2
-        uint256 theta = (Trigonometry.PI * 2 * u2) / PRECISION;
-
-        // Step 5: z0 = mag * cos(theta), z1 = mag * sin(theta)
-        // Result is in normal distribution space
-        int256 normZ0 = int256(mag) * int256(Trigonometry.cos(theta)) / int256(PRECISION);
-        int256 normZ1 = int256(mag) * int256(Trigonometry.sin(theta)) / int256(PRECISION);
+    function sqrt(uint256 x) internal pure returns (uint256) {
+        return Math.sqrt(x);
     }
 }

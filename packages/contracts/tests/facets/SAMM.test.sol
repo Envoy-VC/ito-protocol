@@ -119,6 +119,8 @@ contract SAMMFacetTests is Test, SetUp {
         mockETH.approve(address(sammFacet), 1 ether);
         uint256 requestId = sammFacet.swap(poolId, address(mockETH), 1 ether);
 
+        console.log("Request Id: ", requestId);
+
         logPoolState(poolId);
         // Fulfill Swap
         vrfCoordinator.fulfillRandomWords(requestId, address(itoProxy));

@@ -9,17 +9,17 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {LiquidityFacet} from "../facets/LiquidityFacet.sol";
 import {OracleFacet} from "../facets/OracleFacet.sol";
 
-import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
-
 // Libraries
 import {SAMMStorageLib} from "../libraries/SAMMStorage.sol";
 import {LiquidityStorageLib} from "../libraries/LiquidityStorage.sol";
-import {Probit} from "../libraries/Test.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {StochasticMath} from "../libraries/StochasticMath.sol";
 
-import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
+import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
+import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
+import {IVRFCoordinatorV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFCoordinatorV2Plus.sol";
 
-contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
+contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2Plus {
     uint256 private constant PRECISION = 1e18;
     uint256 private constant SECONDS_PER_YEAR = 31536000;
     uint256 private constant BASE_FEE_BPS = 5; // 0.05%
@@ -30,18 +30,20 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
     uint16 constant REQUEST_CONFIRMATIONS = 3;
     uint32 constant NUM_WORDS = 1;
     bytes32 immutable s_keyHash;
-    uint64 immutable s_subscriptionId;
-    VRFCoordinatorV2Interface immutable COORDINATOR;
+    uint256 immutable s_subscriptionId;
+    IVRFCoordinatorV2Plus immutable COORDINATOR;
 
     using SafeERC20 for IERC20;
 
     event SwapInitiated(uint256 indexed requestId, address indexed user, address tokenIn, uint256 amountIn);
     event SwapCompleted(uint256 indexed requestId, uint256 amountOut, uint256 feeCharged);
 
-    constructor(address vrfCoordinator, bytes32 keyHash, uint64 subscriptionId) VRFConsumerBaseV2(vrfCoordinator) {
+    constructor(address vrfCoordinator, bytes32 keyHash, uint256 subscriptionId)
+        VRFConsumerBaseV2Plus(vrfCoordinator)
+    {
         s_keyHash = keyHash;
         s_subscriptionId = subscriptionId;
-        COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+        COORDINATOR = IVRFCoordinatorV2Plus(vrfCoordinator);
     }
 
     function swap(bytes8 poolId, address tokenIn, uint256 amountIn) external nonReentrant returns (uint256) {
@@ -61,7 +63,14 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
 
         // Request Randomness from VRF.
         uint256 requestId = COORDINATOR.requestRandomWords(
-            s_keyHash, s_subscriptionId, REQUEST_CONFIRMATIONS, CALLBACK_GAS_LIMIT, NUM_WORDS
+            VRFV2PlusClient.RandomWordsRequest({
+                keyHash: s_keyHash,
+                subId: s_subscriptionId,
+                requestConfirmations: REQUEST_CONFIRMATIONS,
+                callbackGasLimit: CALLBACK_GAS_LIMIT,
+                numWords: NUM_WORDS,
+                extraArgs: VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({nativePayment: false}))
+            })
         );
 
         // Store swap request
@@ -83,7 +92,7 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
         return requestId;
     }
 
-    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+    function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
         SAMMStorageLib.SAMMStorage storage ss = SAMMStorageLib.sammStorage();
         SAMMStorageLib.SwapRequest storage request = ss.swapRequests[requestId];
 
@@ -100,7 +109,7 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
 
         // Convert random numbers to standard normal distribution
         uint256 scaled = randomWords[0] % (1e18);
-        int256 z0 = Probit.probit(int256(scaled));
+        int256 z0 = StochasticMath.probit(int256(scaled));
 
         // Calculate stochastic price factor
         int256 exponent = _calculateExponent(volatility, timeDelta, z0);

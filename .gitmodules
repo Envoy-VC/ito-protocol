@@ -4,8 +4,8 @@
 [submodule "packages/contracts/lib/openzeppelin-contracts"]
 	path = packages/contracts/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "lib/prb-math"]
+	branch = release-v4
 [submodule "packages/contracts/lib/chainlink-evm"]
 	path = packages/contracts/lib/chainlink-evm
 	url = https://github.com/smartcontractkit/chainlink-evm
-[submodule "lib/prb-math"]
-	branch = release-v4

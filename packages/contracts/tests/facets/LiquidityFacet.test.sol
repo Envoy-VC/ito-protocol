@@ -47,6 +47,7 @@ contract LiquidityFacetTests is Test, SetUp {
         address tokenB = address(mockETH);
         uint256 baseRewardRate = 100;
         bytes8 poolId = liquidityFacet.createPool(tokenA, tokenB, baseRewardRate);
+        console.logBytes8(poolId);
         assert(poolId != bytes8(0));
         vm.stopBroadcast();
     }
