@@ -8,7 +8,7 @@ import { TokenContainer } from "./token-container";
 export const SwapContainer = () => {
   const { sellToken, setSellToken } = useSwapStore();
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex w-full max-w-md flex-col gap-2">
       <div className="relative flex w-full max-w-md flex-col gap-2">
         {sellToken === "eth" ? (
           <>
