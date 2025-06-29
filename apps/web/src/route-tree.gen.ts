@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from "./app/__root";
 import { Route as DashboardRouteRouteImport } from "./app/dashboard/route";
 import { Route as IndexRouteImport } from "./app/index";
 import { Route as DashboardIndexRouteImport } from "./app/dashboard/index";
+import { Route as DashboardPoolRouteImport } from "./app/dashboard/pool";
 import { Route as DashboardFacetRouteImport } from "./app/dashboard/facet";
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
@@ -29,6 +30,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: "/",
   getParentRoute: () => DashboardRouteRoute,
 } as any);
+const DashboardPoolRoute = DashboardPoolRouteImport.update({
+  id: "/pool",
+  path: "/pool",
+  getParentRoute: () => DashboardRouteRoute,
+} as any);
 const DashboardFacetRoute = DashboardFacetRouteImport.update({
   id: "/facet",
   path: "/facet",
@@ -39,11 +45,13 @@ export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteRouteWithChildren;
   "/dashboard/facet": typeof DashboardFacetRoute;
+  "/dashboard/pool": typeof DashboardPoolRoute;
   "/dashboard/": typeof DashboardIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
   "/dashboard/facet": typeof DashboardFacetRoute;
+  "/dashboard/pool": typeof DashboardPoolRoute;
   "/dashboard": typeof DashboardIndexRoute;
 }
 export interface FileRoutesById {
@@ -51,14 +59,26 @@ export interface FileRoutesById {
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteRouteWithChildren;
   "/dashboard/facet": typeof DashboardFacetRoute;
+  "/dashboard/pool": typeof DashboardPoolRoute;
   "/dashboard/": typeof DashboardIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/dashboard" | "/dashboard/facet" | "/dashboard/";
+  fullPaths:
+    | "/"
+    | "/dashboard"
+    | "/dashboard/facet"
+    | "/dashboard/pool"
+    | "/dashboard/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/dashboard/facet" | "/dashboard";
-  id: "__root__" | "/" | "/dashboard" | "/dashboard/facet" | "/dashboard/";
+  to: "/" | "/dashboard/facet" | "/dashboard/pool" | "/dashboard";
+  id:
+    | "__root__"
+    | "/"
+    | "/dashboard"
+    | "/dashboard/facet"
+    | "/dashboard/pool"
+    | "/dashboard/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -89,6 +109,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DashboardIndexRouteImport;
       parentRoute: typeof DashboardRouteRoute;
     };
+    "/dashboard/pool": {
+      id: "/dashboard/pool";
+      path: "/pool";
+      fullPath: "/dashboard/pool";
+      preLoaderRoute: typeof DashboardPoolRouteImport;
+      parentRoute: typeof DashboardRouteRoute;
+    };
     "/dashboard/facet": {
       id: "/dashboard/facet";
       path: "/facet";
@@ -101,11 +128,13 @@ declare module "@tanstack/react-router" {
 
 interface DashboardRouteRouteChildren {
   DashboardFacetRoute: typeof DashboardFacetRoute;
+  DashboardPoolRoute: typeof DashboardPoolRoute;
   DashboardIndexRoute: typeof DashboardIndexRoute;
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardFacetRoute: DashboardFacetRoute,
+  DashboardPoolRoute: DashboardPoolRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 };
 
