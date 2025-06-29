@@ -303,4 +303,48 @@ contract LiquidityFacet is ReentrancyGuard {
         LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
         poolState = ls.poolStates[poolId];
     }
+
+    function getPoolConfig(bytes8 poolId) public view returns (LiquidityStorageLib.PoolConfig memory poolConfig) {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        poolConfig = ls.poolConfigs[poolId];
+    }
+
+    function getUserPosition(address user, bytes8 poolId)
+        public
+        view
+        returns (LiquidityStorageLib.UserPosition memory)
+    {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        return ls.userPositions[user][poolId];
+    }
+
+    function poolExists(bytes8 poolId) public view {
+        LiquidityStorageLib.poolExists(poolId);
+    }
+
+    function _updatePoolAndTransferAfterSwap(
+        bytes8 poolId,
+        address tokenIn,
+        uint256 amountIn,
+        address tokenOut,
+        uint256 amountOut,
+        address user
+    ) public {
+        LiquidityStorageLib.LiquidityStorage storage ls = LiquidityStorageLib.liquidityStorage();
+        LiquidityStorageLib.PoolConfig storage poolConfig = ls.poolConfigs[poolId];
+        LiquidityStorageLib.PoolState storage poolState = ls.poolStates[poolId];
+
+        require(msg.sender == ls.itoProxy, "Only SAMM can call this function through Proxy");
+
+        if (tokenIn == poolConfig.tokenA) {
+            poolState.reserveA += amountIn;
+            poolState.reserveB -= amountOut;
+        } else {
+            poolState.reserveA -= amountOut;
+            poolState.reserveB += amountIn;
+        }
+
+        poolState.lastUpdate = block.timestamp;
+        IERC20(tokenOut).transfer(user, amountOut);
+    }
 }

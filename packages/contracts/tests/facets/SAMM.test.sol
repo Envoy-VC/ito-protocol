@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {LiquidityStorageLib} from "src/libraries/LiquidityStorage.sol";
 
-contract LiquidityFacetTests is Test, SetUp {
+contract SAMMFacetTests is Test, SetUp {
     using Strings for uint256;
 
     function setUp() public virtual override {
@@ -39,16 +39,6 @@ contract LiquidityFacetTests is Test, SetUp {
             padded = string(abi.encodePacked("0", padded));
         }
         return padded;
-    }
-
-    function test_createPool() public {
-        vm.startBroadcast(owner.addr);
-        address tokenA = address(mockUSD);
-        address tokenB = address(mockETH);
-        uint256 baseRewardRate = 100;
-        bytes8 poolId = liquidityFacet.createPool(tokenA, tokenB, baseRewardRate);
-        assert(poolId != bytes8(0));
-        vm.stopBroadcast();
     }
 
     function _createPool() internal returns (bytes8) {
@@ -108,55 +98,35 @@ contract LiquidityFacetTests is Test, SetUp {
         );
     }
 
-    function test_addLiquidity() public {
+    function test_swap() public {
         // Create Pool ETH/USD
         bytes8 poolId = _createPool();
 
         // Alice Adds Liquidity
         vm.startBroadcast(alice.addr);
-        uint256 amountA = 0;
-        uint256 amountB = 0;
-        uint256 liquidity = 0;
-
-        LiquidityStorageLib.PoolState memory state = liquidityFacet.getPoolState(poolId);
-
-        console.log("\n========= Adding Initial Liquidity =========");
-        logBalances(alice.addr, "Alice");
-
-        // Approve
-        mockUSD.approve(address(liquidityFacet), 2500 ether);
-        mockETH.approve(address(liquidityFacet), 1 ether);
-
-        // Add Liquidity
-        (amountA, amountB, liquidity) = liquidityFacet.addLiquidity(poolId, 1 ether, 2500 ether);
-        state = liquidityFacet.getPoolState(poolId);
-
-        logLiquidityOutcome(amountA, amountB, liquidity);
-        logPoolState(poolId);
-        logBalances(alice.addr, "Alice");
+        mockUSD.approve(address(liquidityFacet), 10000 ether);
+        mockETH.approve(address(liquidityFacet), 4 ether);
+        liquidityFacet.addLiquidity(poolId, 4 ether, 10000 ether);
         vm.stopBroadcast();
 
-        vm.warp(block.timestamp + 7 days);
-        console.log("\n============== After 7 Days ==============");
-
-        // Price of ETH drops to $2450
-        vm.startBroadcast(owner.addr);
-        mockPriceFeed.setPrice(2450e8);
-        console.log("\nETH Drops to $2450");
-        vm.stopBroadcast();
-
-        // Bob Adds Liquidity
+        // Testing Swap
         vm.startBroadcast(bob.addr);
-        // Add Liquidity one more time
-        mockUSD.approve(address(liquidityFacet), 2500 ether);
-        mockETH.approve(address(liquidityFacet), 1 ether);
+        logBalances(bob.addr, "Bob");
 
-        console.log("\n========= Second Liquidity =========");
-        (amountA, amountB, liquidity) = liquidityFacet.addLiquidity(poolId, 1 ether, 2500 ether);
-        state = liquidityFacet.getPoolState(poolId);
+        console.log("\n========= Bob Swap =========");
 
-        logLiquidityOutcome(amountA, amountB, liquidity);
+        // Swap
+        mockETH.approve(address(sammFacet), 1 ether);
+        uint256 requestId = sammFacet.swap(poolId, address(mockETH), 1 ether);
+
         logPoolState(poolId);
+        // Fulfill Swap
+        vrfCoordinator.fulfillRandomWords(requestId, address(itoProxy));
+
+        // Log Pool Details After Swap
+        logPoolState(poolId);
+
+        // Bob Balance After Swap
         logBalances(bob.addr, "Bob");
 
         vm.stopBroadcast();

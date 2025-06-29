@@ -13,6 +13,7 @@ import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 import {TreasuryStorageLib} from "../libraries/TreasuryStorage.sol";
 import {LiquidityStorageLib} from "../libraries/LiquidityStorage.sol";
 import {OracleStorageLib} from "../libraries/OracleStorage.sol";
+import {SAMMStorageLib} from "../libraries/SAMMStorage.sol";
 
 /// @title ItoInitializer
 /// @notice Initialization contract for the Ito Diamond proxy
@@ -32,5 +33,6 @@ contract ItoInitializer {
         TreasuryStorageLib.initTreasuryStorage(_treasury);
         LiquidityStorageLib.initLiquidityStorage(_rewardToken, _itoProxy);
         OracleStorageLib.initOracleStorage(_itoProxy);
+        SAMMStorageLib.initSAMMStorage(_itoProxy);
     }
 }

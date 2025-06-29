@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test, Vm} from "forge-std/Test.sol";
+import {Test, Vm, console2 as console} from "forge-std/Test.sol";
 
 // Proxy
 import {ItoProxy} from "src/ItoProxy.sol";
@@ -14,6 +14,9 @@ import {EmergencyFacet} from "src/facets/EmergencyFacet.sol";
 import {LiquidityFacet} from "src/facets/LiquidityFacet.sol";
 import {TreasuryFacet} from "src/facets/TreasuryFacet.sol";
 import {OracleFacet} from "src/facets/OracleFacet.sol";
+import {SAMMFacet} from "src/facets/SAMMFacet.sol";
+
+import {VRFCoordinatorV2Mock} from "src/mocks/MockVRFCoordinator.sol";
 
 // Initializers
 import {ItoInitializer} from "src/initializers/ItoInitializer.sol";
@@ -53,15 +56,19 @@ contract SetUp is Test {
     TreasuryFacet public treasuryFacet;
     EmergencyFacet public emergencyFacet;
     OracleFacet public oracleFacet;
+    SAMMFacet public sammFacet;
 
     // Token
     ItoToken public itoToken;
+
+    address public consumer;
 
     // Mocks
     MockUSD public mockUSD;
     MockETH public mockETH;
     MockPriceFeed public mockPriceFeed;
     MockVolatilityFeed public mockVolatilityFeed;
+    VRFCoordinatorV2Mock public vrfCoordinator;
 
     // Initializers
     ItoInitializer public itoInit;
@@ -102,6 +109,7 @@ contract SetUp is Test {
         treasuryFacet = TreasuryFacet(address(itoProxy));
         emergencyFacet = EmergencyFacet(address(itoProxy));
         oracleFacet = OracleFacet(address(itoProxy));
+        sammFacet = SAMMFacet(address(itoProxy));
 
         // Deploy Mocks
         mockUSD = new MockUSD(owner.addr);
@@ -127,15 +135,29 @@ contract SetUp is Test {
     function initializeFacets(address _proxyAddress) internal {
         DiamondCutFacet cut = DiamondCutFacet(_proxyAddress);
 
+        // Deploy Mock Coordinator And Create Subscription
+        VRFCoordinatorV2Mock _vrfCoordinator = new VRFCoordinatorV2Mock(100000000000000000, 1000000000);
+        uint64 subscriptionId = _vrfCoordinator.createSubscription();
+        _vrfCoordinator.fundSubscription(subscriptionId, 1000000000000000000);
+
         // Deploy Facets
         DiamondLoupeFacet _diamondLoupeFacet = new DiamondLoupeFacet();
         TreasuryFacet _treasuryFacet = new TreasuryFacet();
         LiquidityFacet _liquidityFacet = new LiquidityFacet();
         EmergencyFacet _emergencyFacet = new EmergencyFacet();
         OracleFacet _oracleFacet = new OracleFacet();
+        SAMMFacet _sammFacet = new SAMMFacet(
+            address(_vrfCoordinator), 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc, subscriptionId
+        );
+
+        consumer = address(_sammFacet);
+
+        // Add Consumer to Coordinator
+        _vrfCoordinator.addConsumer(subscriptionId, address(itoProxy));
+        vrfCoordinator = VRFCoordinatorV2Mock(address(_vrfCoordinator));
 
         // Prepare diamond cut data
-        IDiamondCut.FacetCut[] memory facetCuts = new IDiamondCut.FacetCut[](5);
+        IDiamondCut.FacetCut[] memory facetCuts = new IDiamondCut.FacetCut[](6);
 
         // Diamond Loupe Facet
         bytes4[] memory diamondLoupeSelectors = new bytes4[](6);
@@ -173,12 +195,16 @@ contract SetUp is Test {
         });
 
         // Liquidity Facet
-        bytes4[] memory liquiditySelectors = new bytes4[](5);
+        bytes4[] memory liquiditySelectors = new bytes4[](9);
         liquiditySelectors[0] = LiquidityFacet.createPool.selector;
         liquiditySelectors[1] = LiquidityFacet.addLiquidity.selector;
         liquiditySelectors[2] = LiquidityFacet.removeLiquidity.selector;
         liquiditySelectors[3] = LiquidityFacet.getPoolState.selector;
         liquiditySelectors[4] = LiquidityFacet.fundRewards.selector;
+        liquiditySelectors[5] = LiquidityFacet.getPoolConfig.selector;
+        liquiditySelectors[6] = LiquidityFacet.getUserPosition.selector;
+        liquiditySelectors[7] = LiquidityFacet.poolExists.selector;
+        liquiditySelectors[8] = LiquidityFacet._updatePoolAndTransferAfterSwap.selector;
         facetCuts[3] = IDiamondCut.FacetCut({
             facetAddress: address(_liquidityFacet),
             action: IDiamondCut.FacetCutAction.Add,
@@ -194,6 +220,17 @@ contract SetUp is Test {
             facetAddress: address(_oracleFacet),
             action: IDiamondCut.FacetCutAction.Add,
             functionSelectors: oracleSelectors
+        });
+
+        // SAMM Facet
+        bytes4[] memory sammSelectors = new bytes4[](2);
+        sammSelectors[0] = SAMMFacet.swap.selector;
+        // rawFulfillRandomWords(uint256,uint256[])
+        sammSelectors[1] = 0x1fe543e3;
+        facetCuts[5] = IDiamondCut.FacetCut({
+            facetAddress: address(_sammFacet),
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: sammSelectors
         });
 
         // Deploy Initializer

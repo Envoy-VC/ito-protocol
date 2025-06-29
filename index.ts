@@ -35,4 +35,36 @@
 
 // console.log(1e36 / 24500000000000000000000000000000);
 
-console.log(3141592653589793238 / 2);
+const volatility = 0.8;
+const SECONDS_IN_YEAR = 31536000;
+//  5 mins in years
+const timeDelta = 300 / SECONDS_IN_YEAR;
+const z0 = 152853852999162607 / 1e18;
+
+const price = 2450;
+
+const convexityAdjustment = -(volatility * volatility * timeDelta) / 2;
+// JS:  -3044140030441.401
+// SOL: -3044140030441
+
+const randomShock = volatility * Math.sqrt(timeDelta) * z0;
+// JS:   377158327655476.7
+// SOL:  377158327655469
+
+const exponent = convexityAdjustment + randomShock;
+// Sol:    374114187625028
+// JS:     374114187625035.3
+
+const priceFactor = Math.exp(exponent);
+// JS:   1000374184177065500
+// SOL:  1000374184168337719
+
+const effectivePrice = price * priceFactor;
+console.log("Effective Price: ", effectivePrice);
+// JS:    2450916751233810400000
+// SOL:   2450916751212427411550
+
+console.log((2450916751212427411550 - 7352750253637282234) / 1e18);
+
+// 2450916751212427411550
+//  203426581532318479845
