@@ -1,3 +1,4 @@
+import { Toaster } from "@ito-protocol/ui/components/sonner";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
@@ -12,6 +13,7 @@ const RootComponent = () => {
       {import.meta.env.MODE === "development" && (
         <TanStackRouterDevtools position="bottom-right" />
       )}
+      <Toaster />
     </ProviderTree>
   );
 };

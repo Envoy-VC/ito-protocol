@@ -20,6 +20,8 @@ const wagmiAdapter = new WagmiAdapter({
   ssr: true,
 });
 
+export const wagmiConfig = wagmiAdapter.wagmiConfig;
+
 createAppKit({
   adapters: [wagmiAdapter],
   defaultNetwork: avalancheFuji,

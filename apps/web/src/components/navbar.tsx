@@ -12,9 +12,9 @@ const links = [
     name: "Pool",
   },
   {
-    href: "/dashboard/facet",
-    key: "facet",
-    name: "Facet",
+    href: "/dashboard/faucet",
+    key: "faucet",
+    name: "Faucet",
   },
 ];
 

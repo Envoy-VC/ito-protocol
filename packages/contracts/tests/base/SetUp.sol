@@ -61,8 +61,6 @@ contract SetUp is Test {
     // Token
     ItoToken public itoToken;
 
-    address public consumer;
-
     // Mocks
     MockUSD public mockUSD;
     MockETH public mockETH;
@@ -150,8 +148,6 @@ contract SetUp is Test {
         SAMMFacet _sammFacet = new SAMMFacet(
             address(_vrfCoordinator), 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc, subscriptionId
         );
-
-        consumer = address(_sammFacet);
 
         // Add Consumer to Coordinator
         _vrfCoordinator.addConsumer(subscriptionId, address(itoProxy));

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { FacetContainer } from "@/components";
 
-export const Route = createFileRoute("/dashboard/facet")({
+export const Route = createFileRoute("/dashboard/faucet")({
   component: RouteComponent,
 });
 

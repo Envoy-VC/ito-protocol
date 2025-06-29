@@ -4,12 +4,58 @@ import { Input } from "@ito-protocol/ui/components/input";
 import { EthereumIcon, USDCIcon } from "@ito-protocol/ui/icons";
 import { cn } from "@ito-protocol/ui/lib/utils";
 import { ChevronsUpDown } from "lucide-react";
+import { formatEther, zeroAddress } from "viem";
+import { useAccount } from "wagmi";
+
+import {
+  useReadMockEthBalanceOf,
+  useReadMockUsdBalanceOf,
+  useReadOracleFacetGetLatestPrice,
+} from "@/__generated__/wagmi";
 
 import { MintButton } from "./mint-button";
 
 export const FacetContainer = () => {
+  const [mintState, setMintState] = useState<
+    "idle" | "processing" | "waiting-for-confirmation" | "success" | "error"
+  >("idle");
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [currentToken, setCurrentToken] = useState<"eth" | "usd">("eth");
+
+  const { address } = useAccount();
+
+  const { data: mockEthBalance, refetch: refetchMockEthBalance } =
+    useReadMockEthBalanceOf({
+      args: [address ?? zeroAddress],
+    });
+
+  const { data: mockUsdBalance, refetch: refetchMockUsdBalance } =
+    useReadMockUsdBalanceOf({
+      args: [address ?? zeroAddress],
+    });
+
+  const { data: ethPriceInUSD } = useReadOracleFacetGetLatestPrice({
+    args: ["0xfaa3722d88d453bb"],
+  });
+
+  const amountValue = useMemo(() => {
+    const a = amount ?? 0;
+    const currentPrice = Number(formatEther(ethPriceInUSD ?? 0n));
+    if (currentToken === "eth") return (a * currentPrice).toFixed(4);
+    return a;
+  }, [currentToken, amount, ethPriceInUSD]);
+
+  const refetchAll = async () => {
+    await refetchMockEthBalance();
+    await refetchMockUsdBalance();
+  };
+
+  const balance = useMemo(() => {
+    const eth = formatEther(mockEthBalance ?? 0n);
+    const usd = formatEther(mockUsdBalance ?? 0n);
+    if (currentToken === "eth") return eth;
+    return usd;
+  }, [mockEthBalance, mockUsdBalance, currentToken]);
 
   const { Icon, symbol, mockSymbol } = useMemo(() => {
     if (currentToken === "eth") {
@@ -27,6 +73,7 @@ export const FacetContainer = () => {
       symbol: "USD",
     };
   }, [currentToken]);
+
   return (
     <div className="flex w-full max-w-md flex-col gap-2">
       <div
@@ -40,6 +87,7 @@ export const FacetContainer = () => {
         <div className="flex flex-row items-center justify-between">
           <Input
             className="!text-5xl [&::-moz-appearance]:textfield rounded-none border-none px-0 shadow-none outline-none [&::-webkit-outer-spin-button] focus-visible:border-0 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none"
+            disabled={mintState !== "idle"}
             onChange={(e) => {
               let amount: number | undefined;
               if (e.target.value === "") amount = undefined;
@@ -64,11 +112,20 @@ export const FacetContainer = () => {
           </button>
         </div>
         <div className="flex items-center justify-between gap-2 text-neutral-400 text-sm">
-          <div>$0</div>
-          <div>0.00 {mockSymbol}</div>
+          <div>${amountValue}</div>
+          <div>
+            {balance} {mockSymbol}
+          </div>
         </div>
       </div>
-      <MintButton amount={amount} setAmount={setAmount} />
+      <MintButton
+        amount={amount}
+        currentToken={currentToken}
+        mintState={mintState}
+        refetch={refetchAll}
+        setAmount={setAmount}
+        setMintState={setMintState}
+      />
     </div>
   );
 };
