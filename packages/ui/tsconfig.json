@@ -5,7 +5,7 @@
     "declaration": true,
     "declarationMap": true,
     "jsx": "react-jsx",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": { "@ito-protocol/ui/*": ["./src/*"] },

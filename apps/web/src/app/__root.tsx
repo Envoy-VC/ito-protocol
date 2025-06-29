@@ -6,16 +6,16 @@ import { ProviderTree } from "@/providers";
 import "@ito-protocol/ui/globals.css";
 
 const RootComponent = () => {
-	return (
-		<ProviderTree>
-			<Outlet />
-			{import.meta.env.MODE === "development" && (
-				<TanStackRouterDevtools position="bottom-right" />
-			)}
-		</ProviderTree>
-	);
+  return (
+    <ProviderTree>
+      <Outlet />
+      {import.meta.env.MODE === "development" && (
+        <TanStackRouterDevtools position="bottom-right" />
+      )}
+    </ProviderTree>
+  );
 };
 
 export const Route = createRootRoute({
-	component: RootComponent,
+  component: RootComponent,
 });
