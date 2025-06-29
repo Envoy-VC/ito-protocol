@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {console2 as console} from "forge-std/console2.sol";
-
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -66,8 +64,6 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
             s_keyHash, s_subscriptionId, REQUEST_CONFIRMATIONS, CALLBACK_GAS_LIMIT, NUM_WORDS
         );
 
-        console.log("Request Id: ", requestId);
-
         // Store swap request
         ss.swapRequests[requestId] = SAMMStorageLib.SwapRequest({
             user: user,
@@ -88,8 +84,6 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
     }
 
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
-        console.log("Called fulfillRandomWords with requestId: ", requestId);
-        console.log("randomWords[0]: ", randomWords[0]);
         SAMMStorageLib.SAMMStorage storage ss = SAMMStorageLib.sammStorage();
         SAMMStorageLib.SwapRequest storage request = ss.swapRequests[requestId];
 
@@ -97,17 +91,12 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
         require(request.isFulfilled == false, "REQUEST_ALREADY_FULFILLED");
 
         // Get market data
-        console.log("getting market data");
         OracleFacet oracleFacet = OracleFacet(ss.itoProxy);
-        console.log("oracleFacet address: ", address(oracleFacet));
         uint256 price = oracleFacet.getLatestPrice(request.poolId);
-        console.log("price: ", price);
         uint256 volatility = oracleFacet.getLatestVolatility(request.poolId);
-        console.log("volatility: ", volatility);
 
         // Calculate time delta in years
         uint256 timeDelta = _calculateTimeDelta(request.poolId);
-        console.log("timeDelta: ", timeDelta);
 
         // Convert random numbers to standard normal distribution
         uint256 scaled = randomWords[0] % (1e18);
@@ -117,11 +106,9 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
         int256 exponent = _calculateExponent(volatility, timeDelta, z0);
 
         uint256 priceFactor = _exp(exponent);
-        console.log("priceFactor: ", priceFactor);
 
         // Calculate effective price
         uint256 effectivePrice = _calculateEffectivePrice(price, priceFactor, request.tokenIn, request.poolId);
-        console.log("effectivePrice: ", effectivePrice);
 
         // Execute swap with stochastic price
         _executeSwap(requestId, effectivePrice, volatility);
@@ -139,7 +126,6 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
 
         if (request.tokenIn == pool.tokenA) {
             amountOut = (request.amountIn * effectivePrice) / PRECISION;
-            console.log("amountOut: ", amountOut);
 
             // Apply dynamic fee
             fee = _calculateFee(request.amountIn, amountOut, volatility, request.poolId);
@@ -153,15 +139,11 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
                 request.poolId, request.tokenIn, request.amountIn, pool.tokenB, amountOutAfterFee, request.user
             );
         } else {
-            console.log("Effective Price: ", effectivePrice);
             amountOut = (request.amountIn * effectivePrice) / PRECISION;
-
-            console.log("amountOut: ", amountOut);
 
             // Apply dynamic fee
             fee = _calculateFee(request.amountIn, amountOut, volatility, request.poolId);
             uint256 amountOutAfterFee = amountOut - fee;
-            console.log("amountOutAfterFee: ", amountOutAfterFee);
 
             require(amountOutAfterFee > 0, "INSUFFICIENT_OUTPUT");
             require(amountOutAfterFee <= poolState.reserveA, "INSUFFICIENT_LIQUIDITY");
@@ -197,7 +179,7 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2 {
             (amountIn * PRECISION) / ((pool.tokenA == address(0)) ? poolState.reserveA : poolState.reserveB);
         uint256 depthFactor = (amountOut * poolDepth) / (1000 * PRECISION);
 
-        return baseFee;
+        return baseFee + volatilityFactor + depthFactor;
     }
 
     function _calculateTimeDelta(bytes8 poolId) private view returns (uint256) {
