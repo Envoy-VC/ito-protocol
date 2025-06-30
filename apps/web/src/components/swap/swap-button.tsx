@@ -41,7 +41,7 @@ export const SwapButton = () => {
 			});
 			const approvalNeeded = allowance < sellAmount;
 			if (approvalNeeded) {
-				const amountToApprove = amount - allowance;
+				const amountToApprove = amount - allowance + 1n;
 				setStatus("approving-eth");
 				const hash = await writeContract(wagmiConfig, {
 					...mockEthConfig,
