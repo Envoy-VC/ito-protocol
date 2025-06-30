@@ -96,6 +96,7 @@ export const SwapButton = () => {
 
   return (
     <Button
+      animateKey={status}
       className="h-12 w-full max-w-md"
       disabled={status !== "idle"}
       onClick={onSwap}

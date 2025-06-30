@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Input } from "@ito-protocol/ui/components/input";
 import { EthereumIcon, USDCIcon } from "@ito-protocol/ui/icons";
 import { cn } from "@ito-protocol/ui/lib/utils";
 import { motion, type Variants } from "motion/react";
+import { formatEther, zeroAddress } from "viem";
+import { useAccount } from "wagmi";
 
+import {
+  useReadMockEthBalanceOf,
+  useReadMockUsdBalanceOf,
+} from "@/__generated__/wagmi";
 import { useSwapStore } from "@/lib/stores";
 
 const buttons = [
@@ -73,6 +79,23 @@ export const TokenContainer = ({
   const Icon = icon === "eth" ? EthereumIcon : USDCIcon;
   const [isHovered, setIsHovered] = useState(false);
 
+  const { address } = useAccount();
+
+  const { data: mockEthBalance } = useReadMockEthBalanceOf({
+    args: [address ?? zeroAddress],
+  });
+
+  const { data: mockUsdBalance } = useReadMockUsdBalanceOf({
+    args: [address ?? zeroAddress],
+  });
+
+  const balance = useMemo(() => {
+    const eth = Number(formatEther(mockEthBalance ?? 0n)).toFixed(4);
+    const usd = Number(formatEther(mockUsdBalance ?? 0n)).toFixed(2);
+    if (icon === "eth") return eth;
+    return usd;
+  }, [mockEthBalance, mockUsdBalance, icon]);
+
   return (
     <motion.div
       animate={isHovered ? "hover" : ""}
@@ -97,6 +120,10 @@ export const TokenContainer = ({
                 <motion.button
                   className="cursor-pointer rounded-lg border border-neutral-600 bg-white/5 px-[6px] py-[2px] font-medium text-xs transition-all hover:scale-[103%]"
                   key={button.key}
+                  onClick={() => {
+                    const val = Number(balance) * button.value;
+                    setSellAmount(val);
+                  }}
                   type="button"
                   variants={buttonVariants}
                 >
@@ -128,9 +155,10 @@ export const TokenContainer = ({
           <div className="pr-2 text-xl">{symbol}</div>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-2 text-neutral-400 text-sm">
-        <div>$0</div>
-        <div>0.00 {mockSymbol}</div>
+      <div className="flex items-center justify-end gap-2 text-neutral-400 text-sm">
+        <div>
+          {balance} {mockSymbol}
+        </div>
       </div>
     </motion.div>
   );

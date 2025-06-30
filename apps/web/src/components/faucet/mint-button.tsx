@@ -88,6 +88,7 @@ export const MintButton = ({
 
   return (
     <Button
+      animateKey={mintState}
       className="h-12 w-full max-w-md"
       disabled={mintState !== "idle"}
       onClick={onMint}

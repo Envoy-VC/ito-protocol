@@ -37,7 +37,7 @@ export const itoProxyAbi = [
 ] as const;
 
 export const itoProxyAddress =
-  "0x6E85056eb08D248Ee516bE85818EE5a4ca0b0223" as const;
+  "0x90d7F4E09415FCC36fF860e56e40330B09E2dBD8" as const;
 
 export const itoProxyConfig = {
   address: itoProxyAddress,
@@ -373,7 +373,7 @@ export const itoTokenAbi = [
 ] as const;
 
 export const itoTokenAddress =
-  "0xe7099daf495c9AaD8DbBc609807cCAfCd66c782e" as const;
+  "0x724a39308024ECc6f78121113F14a07383522E8F" as const;
 
 export const itoTokenConfig = {
   address: itoTokenAddress,
@@ -672,7 +672,7 @@ export const liquidityFacetAbi = [
 ] as const;
 
 export const liquidityFacetAddress =
-  "0x6E85056eb08D248Ee516bE85818EE5a4ca0b0223" as const;
+  "0x90d7F4E09415FCC36fF860e56e40330B09E2dBD8" as const;
 
 export const liquidityFacetConfig = {
   address: liquidityFacetAddress,
@@ -1008,7 +1008,7 @@ export const mockEthAbi = [
 ] as const;
 
 export const mockEthAddress =
-  "0x2A8F6aC0b8B5f4cCcB1F418A1531F069bB53ae7e" as const;
+  "0xD57622C4fa83ff905c3759cE43F4a0E34f812470" as const;
 
 export const mockEthConfig = {
   address: mockEthAddress,
@@ -1344,7 +1344,7 @@ export const mockUsdAbi = [
 ] as const;
 
 export const mockUsdAddress =
-  "0x6e2bBe609E602bE493fF8580523Bf1eeBa2c7693" as const;
+  "0x8B2421509a49bAC33A3c19133F60B3187Da34514" as const;
 
 export const mockUsdConfig = {
   address: mockUsdAddress,
@@ -1391,7 +1391,7 @@ export const oracleFacetAbi = [
 ] as const;
 
 export const oracleFacetAddress =
-  "0x6E85056eb08D248Ee516bE85818EE5a4ca0b0223" as const;
+  "0x90d7F4E09415FCC36fF860e56e40330B09E2dBD8" as const;
 
 export const oracleFacetConfig = {
   address: oracleFacetAddress,
@@ -1585,7 +1585,7 @@ export const sammFacetAbi = [
 ] as const;
 
 export const sammFacetAddress =
-  "0x6E85056eb08D248Ee516bE85818EE5a4ca0b0223" as const;
+  "0x90d7F4E09415FCC36fF860e56e40330B09E2dBD8" as const;
 
 export const sammFacetConfig = {
   address: sammFacetAddress,

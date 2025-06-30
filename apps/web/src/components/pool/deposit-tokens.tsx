@@ -40,7 +40,7 @@ export const DepositTokens = () => {
       oraclePrice,
     );
     const usdAmount = (ethAmount ?? 0) / targetRatio;
-    // setUsdAmount(usdAmount);
+    setUsdAmount(usdAmount);
   }, [ethAmount, poolState, vol, price, setUsdAmount]);
 
   return (

@@ -52,8 +52,8 @@ export const FacetContainer = () => {
   };
 
   const balance = useMemo(() => {
-    const eth = formatEther(mockEthBalance ?? 0n);
-    const usd = formatEther(mockUsdBalance ?? 0n);
+    const eth = Number(formatEther(mockEthBalance ?? 0n)).toFixed(4);
+    const usd = Number(formatEther(mockUsdBalance ?? 0n)).toFixed(2);
     if (currentToken === "eth") return eth;
     return usd;
   }, [mockEthBalance, mockUsdBalance, currentToken]);

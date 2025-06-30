@@ -64,8 +64,7 @@ export const TokenContainer = ({
   symbol,
   mockSymbol,
 }: TokenContainerProps) => {
-  const { ethAmount, usdAmount, setEthAmount, status, setUsdAmount } =
-    usePoolStore();
+  const { ethAmount, usdAmount, setEthAmount, status } = usePoolStore();
   const Icon = icon === "eth" ? EthereumIcon : USDCIcon;
   const [isHovered, setIsHovered] = useState(false);
 
@@ -80,9 +79,11 @@ export const TokenContainer = ({
   });
 
   const balance = useMemo(() => {
-    const balance = Number(formatEther(rawBalance ?? 0n));
+    const balance = Number(formatEther(rawBalance ?? 0n)).toFixed(
+      icon === "eth" ? 4 : 2,
+    );
     return balance;
-  }, [rawBalance]);
+  }, [rawBalance, icon]);
 
   return (
     <motion.div
@@ -99,14 +100,13 @@ export const TokenContainer = ({
       <div className="flex flex-row items-center justify-between">
         <Input
           className="!text-4xl [&::-moz-appearance]:textfield rounded-none border-none px-0 shadow-none outline-none [&::-webkit-outer-spin-button] focus-visible:border-0 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none"
-          disabled={status !== "idle"}
+          disabled={status !== "idle" || icon === "usd"}
           onChange={(e) => {
             let amount: number | undefined;
             if (e.target.value === "") amount = undefined;
             else amount = Number(e.target.value);
 
             if (icon === "eth") setEthAmount(amount);
-            else setUsdAmount(amount);
           }}
           placeholder="0"
           type="number"
@@ -126,7 +126,7 @@ export const TokenContainer = ({
                   className="cursor-pointer rounded-lg border border-neutral-600 bg-white/5 px-[6px] py-[2px] font-medium text-xs transition-all hover:scale-[103%]"
                   key={button.key}
                   onClick={() => {
-                    const val = balance * button.value;
+                    const val = Number(balance) * button.value;
                     setEthAmount(val);
                   }}
                   type="button"

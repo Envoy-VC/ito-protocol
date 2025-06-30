@@ -12,29 +12,28 @@ import { abi as mockUSDAbi } from "../../packages/contracts/out/MockUSD.sol/Mock
 import { abi as oracleFacetAbi } from "../../packages/contracts/out/OracleFacet.sol/OracleFacet.json";
 import { abi as sammFacetAbi } from "../../packages/contracts/out/SAMMFacet.sol/SAMMFacet.json";
 
-const itoProxyAddress = "0x6E85056eb08D248Ee516bE85818EE5a4ca0b0223";
+const itoProxyAddress = "0x90d7F4E09415FCC36fF860e56e40330B09E2dBD8";
 
-const itoTokenAddress = "0xe7099daf495c9AaD8DbBc609807cCAfCd66c782e";
-const mockETHAddress = "0x2A8F6aC0b8B5f4cCcB1F418A1531F069bB53ae7e";
-const mockUSDAddress = "0x6e2bBe609E602bE493fF8580523Bf1eeBa2c7693";
+const itoTokenAddress = "0x724a39308024ECc6f78121113F14a07383522E8F";
+const mockETHAddress = "0xD57622C4fa83ff905c3759cE43F4a0E34f812470";
+const mockUSDAddress = "0x8B2421509a49bAC33A3c19133F60B3187Da34514";
 
 // Deploying contracts with the account: 0x9A36a8EDAF9605F7D4dDC72F4D81463fb6f841d8
-//   DiamondCutFacet deployed to: 0x6cb75Ab8807b55dF4cBb7751dED5854575Ea414a
-//   OwnershipFacet deployed to: 0x963288C37c071c603Bfa766EEd1B81e2C8825069
-//   Proxy deployed to: 0x6E85056eb08D248Ee516bE85818EE5a4ca0b0223
-//   Diamond Loupe deployed to: 0x6E85056eb08D248Ee516bE85818EE5a4ca0b0223
-//   Treasury deployed to: 0x23F91c8cd97CF971d7d47ccA0b3996BAC7a544B6
-//   Liquidity deployed to: 0xcDfb1932B902F7c4558fC67268C29a0a90C269ef
-//   Emergency deployed to: 0xf66Cf61f078C2D5aBB98Cb5aa1573f2191B1735C
-//   Oracle deployed to: 0x6FAEe8b4010221DB07D75A802b8b228f317e0e88
-//   SAMM deployed to: 0xd86A74554B290683cC7eF08b3abA08e50858a135
-//   ItoInitializer deployed to: 0xdd54C3FD2A5e21b270E66016BB5bA0451E26EbD6
-//   ItoToken deployed to: 0xe7099daf495c9AaD8DbBc609807cCAfCd66c782e
-//   Mock USD deployed to: 0x6e2bBe609E602bE493fF8580523Bf1eeBa2c7693
-//   Mock ETH deployed to: 0x2A8F6aC0b8B5f4cCcB1F418A1531F069bB53ae7e
-//   Mock Volatility deployed to: 0xE03dfC67de98519B42Bf91B452b10B92f1b0A761
-//   Pool Id:
-//   0x645b28c2c27a32d2
+// DiamondCutFacet deployed to: 0xce27ADed623Ee8e44caC94B756f21f9A22A76644
+// OwnershipFacet deployed to: 0x9a15bB682f36499e2359fe799a39296b1854Fc5F
+// Diamond Loupe deployed to: 0x90d7F4E09415FCC36fF860e56e40330B09E2dBD8
+// Treasury deployed to: 0xf32713199d3CA492B8f202fd1C2Ea50B7b95febA
+// Liquidity deployed to: 0x5EB28617bD276DCA00bfD76047B85CE122f73F05
+// Emergency deployed to: 0xb16dBe3d99aA60BbC8cD8ED89275FFa27F91C393
+// Oracle deployed to: 0x98a76313c5F504f0EB6f9E57cdfb7e1ff5Ca6C73
+// SAMM deployed to: 0x14DF2A4c1E70edad89476853a6cEC32Cb21e9300
+// ItoInitializer deployed to: 0x36d9620916a78777Ea7c4194cAa80B97c4F1BCfA
+// ItoToken deployed to: 0x724a39308024ECc6f78121113F14a07383522E8F
+// Mock USD deployed to: 0x8B2421509a49bAC33A3c19133F60B3187Da34514
+// Mock ETH deployed to: 0xD57622C4fa83ff905c3759cE43F4a0E34f812470
+// Mock Volatility deployed to: 0x8B8d51005d88cCc1C66AfC8B613383DE519457bB
+// Pool Id:
+// 0x0032627235a380cd
 
 export default defineConfig({
   contracts: [

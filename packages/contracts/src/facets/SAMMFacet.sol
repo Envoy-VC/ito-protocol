@@ -172,23 +172,23 @@ contract SAMMFacet is ReentrancyGuard, VRFConsumerBaseV2Plus {
         view
         returns (uint256)
     {
-        SAMMStorageLib.SAMMStorage storage ss = SAMMStorageLib.sammStorage();
-        LiquidityFacet liquidityFacet = LiquidityFacet(ss.itoProxy);
+        // SAMMStorageLib.SAMMStorage storage ss = SAMMStorageLib.sammStorage();
+        // LiquidityFacet liquidityFacet = LiquidityFacet(ss.itoProxy);
 
-        LiquidityStorageLib.PoolConfig memory pool = liquidityFacet.getPoolConfig(poolId);
-        LiquidityStorageLib.PoolState memory poolState = liquidityFacet.getPoolState(poolId);
-        // Base fee component
-        uint256 baseFee = (amountOut * BASE_FEE_BPS) / FEE_DENOMINATOR;
+        // LiquidityStorageLib.PoolConfig memory pool = liquidityFacet.getPoolConfig(poolId);
+        // LiquidityStorageLib.PoolState memory poolState = liquidityFacet.getPoolState(poolId);
+        // // Base fee component
+        // uint256 baseFee = (amountOut * BASE_FEE_BPS) / FEE_DENOMINATOR;
 
-        // Volatility component (1 bps per 10% volatility)
-        uint256 volatilityFactor = (amountOut * (volatility / 1e17)) / 100;
+        // // Volatility component (1 bps per 10% volatility)
+        // uint256 volatilityFactor = (amountOut * (volatility / 1e17)) / 100;
 
-        // Depth component (0.1 bps per 1% of pool depth)
-        uint256 poolDepth =
-            (amountIn * PRECISION) / ((pool.tokenA == address(0)) ? poolState.reserveA : poolState.reserveB);
-        uint256 depthFactor = (amountOut * poolDepth) / (1000 * PRECISION);
+        // // Depth component (0.1 bps per 1% of pool depth)
+        // uint256 poolDepth =
+        //     (amountIn * PRECISION) / ((pool.tokenA == address(0)) ? poolState.reserveA : poolState.reserveB);
+        // uint256 depthFactor = (amountOut * poolDepth) / (1000 * PRECISION);
 
-        return baseFee + volatilityFactor + depthFactor;
+        return 0;
     }
 
     function _calculateTimeDelta(bytes8 poolId) private view returns (uint256) {

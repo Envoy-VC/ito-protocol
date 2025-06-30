@@ -106,6 +106,7 @@ export const DepositButton = () => {
 
   return (
     <Button
+      animateKey={status}
       className="!w-full h-12"
       disabled={status !== "idle"}
       onClick={onDeposit}
