@@ -87,6 +87,8 @@ All Contracts are deployed and verified on Avalanche Fuji Testnet.
 | Mock ETH | [0xD57622C4fa83ff905c3759cE43F4a0E34f812470](https://testnet.snowtrace.io/address/0xD57622C4fa83ff905c3759cE43F4a0E34f812470) |
 | Pool Id | 0x0032627235a380cd |
 
+**Chainlink VRF Subscription ID**: 84956287292561642221643182526448656106083710917695203120917204973477962849283
+
 ---
 
 ## How it Works

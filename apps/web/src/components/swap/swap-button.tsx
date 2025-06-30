@@ -1,11 +1,7 @@
 import { useMemo } from "react";
 
 import { Button } from "@ito-protocol/ui/components/button";
-import {
-	readContract,
-	waitForTransactionReceipt,
-	writeContract,
-} from "@wagmi/core";
+import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 
@@ -34,23 +30,15 @@ export const SwapButton = () => {
 			setStatus("processing");
 
 			// Check if approval is needed
-			const allowance = await readContract(wagmiConfig, {
+
+			setStatus("approving-eth");
+			const hash1 = await writeContract(wagmiConfig, {
 				...mockEthConfig,
-				args: [address, itoProxyAddress],
-				functionName: "allowance",
+				args: [itoProxyAddress, amount],
+				functionName: "approve",
 			});
-			const approvalNeeded = allowance < sellAmount;
-			if (approvalNeeded) {
-				const amountToApprove = amount - allowance + 1n;
-				setStatus("approving-eth");
-				const hash = await writeContract(wagmiConfig, {
-					...mockEthConfig,
-					args: [itoProxyAddress, amountToApprove],
-					functionName: "approve",
-				});
-				setStatus("waiting-for-eth-confirmation");
-				await waitForTransactionReceipt(wagmiConfig, { hash });
-			}
+			setStatus("waiting-for-eth-confirmation");
+			await waitForTransactionReceipt(wagmiConfig, { hash: hash1 });
 
 			// Execute Swap
 			setStatus("sending-request");
