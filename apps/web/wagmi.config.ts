@@ -36,43 +36,43 @@ const mockUSDAddress = "0x8B2421509a49bAC33A3c19133F60B3187Da34514";
 // 0x0032627235a380cd
 
 export default defineConfig({
-  contracts: [
-    {
-      abi: itoProxyAbi as Abi,
-      address: itoProxyAddress,
-      name: "ItoProxy",
-    },
-    {
-      abi: liquidityFacetAbi as Abi,
-      address: itoProxyAddress,
-      name: "LiquidityFacet",
-    },
-    {
-      abi: sammFacetAbi as Abi,
-      address: itoProxyAddress,
-      name: "SAMMFacet",
-    },
-    {
-      abi: oracleFacetAbi as Abi,
-      address: itoProxyAddress,
-      name: "OracleFacet",
-    },
-    {
-      abi: itoTokenAbi as Abi,
-      address: itoTokenAddress,
-      name: "ItoToken",
-    },
-    {
-      abi: mockETHAbi as Abi,
-      address: mockETHAddress,
-      name: "MockETH",
-    },
-    {
-      abi: mockUSDAbi as Abi,
-      address: mockUSDAddress,
-      name: "MockUSD",
-    },
-  ],
-  out: "src/__generated__/wagmi.ts",
-  plugins: [react()],
+	contracts: [
+		{
+			abi: itoProxyAbi as Abi,
+			address: itoProxyAddress,
+			name: "ItoProxy",
+		},
+		{
+			abi: liquidityFacetAbi as Abi,
+			address: itoProxyAddress,
+			name: "LiquidityFacet",
+		},
+		{
+			abi: sammFacetAbi as Abi,
+			address: itoProxyAddress,
+			name: "SAMMFacet",
+		},
+		{
+			abi: oracleFacetAbi as Abi,
+			address: itoProxyAddress,
+			name: "OracleFacet",
+		},
+		{
+			abi: itoTokenAbi as Abi,
+			address: itoTokenAddress,
+			name: "ItoToken",
+		},
+		{
+			abi: mockETHAbi as Abi,
+			address: mockETHAddress,
+			name: "MockETH",
+		},
+		{
+			abi: mockUSDAbi as Abi,
+			address: mockUSDAddress,
+			name: "MockUSD",
+		},
+	],
+	out: "src/__generated__/wagmi.ts",
+	plugins: [react()],
 });

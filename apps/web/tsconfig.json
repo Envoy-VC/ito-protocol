@@ -1,42 +1,42 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "compilerOptions": {
-    // Modern JavaScript output
-    "allowImportingTsExtensions": true,
-    "allowSyntheticDefaultImports": true,
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		// Modern JavaScript output
+		"allowImportingTsExtensions": true,
+		"allowSyntheticDefaultImports": true,
 
-    // Paths (optional)
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
+		// Paths (optional)
+		"baseUrl": ".",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
 
-    // JSX (React)
-    "jsx": "react-jsx",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "module": "ESNext",
+		// JSX (React)
+		"jsx": "react-jsx",
+		"lib": ["DOM", "DOM.Iterable", "ES2022"],
+		"module": "ESNext",
 
-    // Module resolution & bundler behavior
-    "moduleResolution": "Bundler",
-    "noEmit": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
+		// Module resolution & bundler behavior
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
 
-    // Helpful checks for production
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "paths": {
-      "@/*": ["src/*"],
-      "@ito-protocol/ui/*": ["../../packages/ui/src/*"]
-    },
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
+		// Helpful checks for production
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"paths": {
+			"@/*": ["src/*"],
+			"@ito-protocol/ui/*": ["../../packages/ui/src/*"]
+		},
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
 
-    // Strictness
-    "strict": true,
-    // Modern JavaScript output
-    "target": "ES2022"
-  },
-  "exclude": ["node_modules", "dist"],
-  "include": ["**/*.ts", "**/*.tsx"]
+		// Strictness
+		"strict": true,
+		// Modern JavaScript output
+		"target": "ES2022"
+	},
+	"exclude": ["node_modules", "dist"],
+	"include": ["**/*.ts", "**/*.tsx"]
 }

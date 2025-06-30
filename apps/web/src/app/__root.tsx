@@ -6,14 +6,14 @@ import { ProviderTree } from "@/providers";
 import "@ito-protocol/ui/globals.css";
 
 const RootComponent = () => {
-  return (
-    <ProviderTree>
-      <Outlet />
-      <Toaster />
-    </ProviderTree>
-  );
+	return (
+		<ProviderTree>
+			<Outlet />
+			<Toaster />
+		</ProviderTree>
+	);
 };
 
 export const Route = createRootRoute({
-  component: RootComponent,
+	component: RootComponent,
 });
