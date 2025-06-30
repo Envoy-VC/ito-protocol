@@ -103,3 +103,6 @@ All Contracts are deployed and verified on Avalanche Fuji Testnet.
 This flow ensures each trade uses a fresh volatility-informed price, anchored to real market data and injected with true randomness.
 
 ---
+
+
+For more information, please refer [Explanation Document](https://hackmd.io/@envoy1084/SkDwPYySxg).
