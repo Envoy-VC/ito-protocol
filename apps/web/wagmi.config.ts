@@ -2,40 +2,46 @@ import { defineConfig } from "@wagmi/cli";
 import { react } from "@wagmi/cli/plugins";
 import type { Abi } from "viem";
 
+import { abi as itoProxyAbi } from "../../packages/contracts/out/ItoProxy.sol/ItoProxy.json";
 // Tokens
 import { abi as itoTokenAbi } from "../../packages/contracts/out/ItoToken.sol/ItoToken.json";
 // Facets
 import { abi as liquidityFacetAbi } from "../../packages/contracts/out/LiquidityFacet.sol/LiquidityFacet.json";
 import { abi as mockETHAbi } from "../../packages/contracts/out/MockETH.sol/MockETH.json";
 import { abi as mockUSDAbi } from "../../packages/contracts/out/MockUSD.sol/MockUSD.json";
-import { abi as sammFacetAbi } from "../../packages/contracts/out/SAMMFacet.sol/SAMMFacet.json";
 import { abi as oracleFacetAbi } from "../../packages/contracts/out/OracleFacet.sol/OracleFacet.json";
+import { abi as sammFacetAbi } from "../../packages/contracts/out/SAMMFacet.sol/SAMMFacet.json";
 
-const itoProxyAddress = "0x2aB1B11bbbC3ef58ca7b3595103511C9Ea36eFb6";
+const itoProxyAddress = "0xD7Bc5aEB90efCE77Cdcf42358909D694447f9F20";
 
-const itoTokenAddress = "0xBCa528fCc1Ec19fC103Ea855BB3E371465eF74F0";
-const mockETHAddress = "0x1a522B6e68fE4ec21f3ddFC590dfb0957B91d86c";
-const mockUSDAddress = "0xC94e5f5E4829b2b9AC8938E7Fe4695F6ec1B9145";
+const itoTokenAddress = "0x96D48eE5A4C3B7458359D34AFAD1d33B2D51D575";
+const mockETHAddress = "0xee485ad3d6dF672752291a60002AD48E1573F2D4";
+const mockUSDAddress = "0xD4b157E827dCDE062c7A831fc5a77A71AFD5f283";
 
 // Deploying contracts with the account: 0x9A36a8EDAF9605F7D4dDC72F4D81463fb6f841d8
-// DiamondCutFacet deployed to: 0x731f26C7c96D085DEbfF627b6d2b2702Bd7B347f
-// OwnershipFacet deployed to: 0x8224a89C1Bc86271C979365830c837071fD1F1A6
-// Diamond Loupe deployed to: 0x2aB1B11bbbC3ef58ca7b3595103511C9Ea36eFb6
-// Treasury deployed to: 0xB4e0F93aA4C10333F1B43A4a073C705ed9d0D707
-// Liquidity deployed to: 0x9367821312Df33f4634b159E45039c8D814BA97f
-// Emergency deployed to: 0x2CA12Ac2CB30B9acBdB6d9c7dcFC895338904A93
-// Oracle deployed to: 0xE2567B2A7214877D395Dfa6ca72335644B26dC23
-// SAMM deployed to: 0xc77ab300b6270dA732b137a592Ce54c468859dEf
-// ItoInitializer deployed to: 0x0e561F34e023330D56AfB3b5Af082D5AF1fBf022
-// ItoToken deployed to: 0xBCa528fCc1Ec19fC103Ea855BB3E371465eF74F0
-// Mock USD deployed to: 0xC94e5f5E4829b2b9AC8938E7Fe4695F6ec1B9145
-// Mock ETH deployed to: 0x1a522B6e68fE4ec21f3ddFC590dfb0957B91d86c
-// Mock Volatility deployed to: 0x47CD15374793577f9003D5a43b4fFCE335aA5eA2
+// DiamondCutFacet deployed to: 0xEd97fcA2b3d7958e7A5Dc508ba0159a3C948Ba7d
+// OwnershipFacet deployed to: 0x1807157EFee309A18C05C5d6057B3C1389Fa8c01
+// Diamond Loupe deployed to: 0x6048d64eFbEAFEf6C7D03b8cAB7EdeaaF8bdA7ab
+// Treasury deployed to: 0xf105049F2341918a5f25904B1b5A393Ae2f7470d
+// Liquidity deployed to: 0xbEfD55dc9e3cd8C8c6CAC1ae5EdBCC93F2aDe6A0
+// Emergency deployed to: 0xab990Dbb6ccF3Dec5f5B44776BF67B386CCC513f
+// Oracle deployed to: 0xA10DBbB26fF484a7a2271ee5ae1aA0be4289feC7
+// SAMM deployed to: 0x576d3d8d4972C834303bC39F4727bb9Bdeb1a96f
+// ItoInitializer deployed to: 0x6B4662aA0f1BB7e66467f811174F74B13Da03d2c
+// ItoToken deployed to: 0xfFe0B669AADf06a59D37e13246E58d1d90bFeeB7
+// Mock USD deployed to: 0x72c290C55E5C836dbB05ff7cA3948AB2AaFb8917
+// Mock ETH deployed to: 0x23fb3A2CAe9dC42111B1430a1A091c8a7111903b
+// Mock Volatility deployed to: 0x75436f3D74CcAcB1Fa507B827420B08Fb571D9bc
 // Pool Id:
-// 0xfaa3722d88d453bb
+// 0xc45ce3f10ee8e552
 
 export default defineConfig({
   contracts: [
+    {
+      abi: itoProxyAbi as Abi,
+      address: itoProxyAddress,
+      name: "ItoProxy",
+    },
     {
       abi: liquidityFacetAbi as Abi,
       address: itoProxyAddress,

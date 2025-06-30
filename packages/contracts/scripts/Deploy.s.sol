@@ -22,9 +22,6 @@ import {ItoInitializer} from "src/initializers/ItoInitializer.sol";
 // Interfaces
 import {IDiamondCut} from "src/interfaces/IDiamondCut.sol";
 
-// Libraries
-import {LiquidityStorageLib} from "src/libraries/LiquidityStorage.sol";
-
 // Token
 import {ItoToken} from "src/ItoToken.sol";
 
@@ -107,7 +104,13 @@ contract DeployScript is Script {
         mockVolatilityFeed = new MockVolatilityFeed(owner, 86480);
         console.log("Mock Volatility deployed to:", address(mockVolatilityFeed));
 
-        bytes8 poolId = LiquidityStorageLib.encodePoolId(address(mockETH), address(mockUSD), 0, 1);
+        // Create Pool
+        bytes8 poolId = liquidityFacet.createPool(address(mockETH), address(mockUSD), 0);
+        // Fund Rewards
+        uint256 distributionPeriod = 365 days;
+        itoToken.mint(owner, 100_000 ether);
+        itoToken.approve(address(liquidityFacet), 100_000 ether);
+        liquidityFacet.fundRewards(poolId, 100_000 ether, distributionPeriod);
 
         console.log("Pool Id: ");
         console.logBytes8(poolId);
@@ -236,9 +239,7 @@ contract DeployScript is Script {
 // TODO:
 // 1. Add Proxy as consumer to VRF Coordinator
 
-
 // https://api.routescan.io/v2/network/testnet/evm/43113/etherscan
-
 
 // forge script scripts/Deploy.s.sol:DeployScript --broadcast --rpc-url https://avalanche-fuji-c-chain-rpc.publicnode.com --verifier-url 'https://api.routescan.io/v2/network/testnet/evm/43113/etherscan' --etherscan-api-key "verifyContract" --verify -vvvv
 

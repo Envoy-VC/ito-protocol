@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Input } from "@ito-protocol/ui/components/input";
 import { EthereumIcon, USDCIcon } from "@ito-protocol/ui/icons";
 import { cn } from "@ito-protocol/ui/lib/utils";
 import { motion, type Variants } from "motion/react";
+import { formatEther, zeroAddress } from "viem";
+import { useAccount, useReadContract } from "wagmi";
 
+import { mockEthConfig, mockUsdConfig } from "@/__generated__/wagmi";
 import { usePoolStore } from "@/lib/stores";
 
 const buttons = [
@@ -61,9 +64,24 @@ export const TokenContainer = ({
   symbol,
   mockSymbol,
 }: TokenContainerProps) => {
-  const { ethAmount, usdAmount, setEthAmount, setUsdAmount } = usePoolStore();
+  const { ethAmount, usdAmount, setEthAmount, status } = usePoolStore();
   const Icon = icon === "eth" ? EthereumIcon : USDCIcon;
   const [isHovered, setIsHovered] = useState(false);
+
+  const { address } = useAccount();
+
+  const config = icon === "eth" ? mockEthConfig : mockUsdConfig;
+
+  const { data: rawBalance } = useReadContract({
+    ...config,
+    args: [address ?? zeroAddress],
+    functionName: "balanceOf",
+  });
+
+  const balance = useMemo(() => {
+    const balance = Number(formatEther(rawBalance ?? 0n));
+    return balance;
+  }, [rawBalance]);
 
   return (
     <motion.div
@@ -80,13 +98,14 @@ export const TokenContainer = ({
       <div className="flex flex-row items-center justify-between">
         <Input
           className="!text-4xl [&::-moz-appearance]:textfield rounded-none border-none px-0 shadow-none outline-none [&::-webkit-outer-spin-button] focus-visible:border-0 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none"
+          disabled={status !== "idle" || icon === "usd"}
           onChange={(e) => {
             let amount: number | undefined;
             if (e.target.value === "") amount = undefined;
             else amount = Number(e.target.value);
 
             if (icon === "eth") setEthAmount(amount);
-            else setUsdAmount(amount);
+            // else setUsdAmount(amount);
           }}
           placeholder="0"
           type="number"
@@ -99,20 +118,27 @@ export const TokenContainer = ({
       </div>
       <div className="flex items-center justify-between gap-2 text-neutral-400 text-sm">
         <div className="flex flex-row items-center justify-end gap-1">
-          {buttons.map((button) => {
-            return (
-              <motion.button
-                className="cursor-pointer rounded-lg border border-neutral-600 bg-white/5 px-[6px] py-[2px] font-medium text-xs transition-all hover:scale-[103%]"
-                key={button.key}
-                type="button"
-                variants={buttonVariants}
-              >
-                {button.name}
-              </motion.button>
-            );
-          })}
+          {icon === "eth" &&
+            buttons.map((button) => {
+              return (
+                <motion.button
+                  className="cursor-pointer rounded-lg border border-neutral-600 bg-white/5 px-[6px] py-[2px] font-medium text-xs transition-all hover:scale-[103%]"
+                  key={button.key}
+                  onClick={() => {
+                    const val = balance * button.value;
+                    setEthAmount(val);
+                  }}
+                  type="button"
+                  variants={buttonVariants}
+                >
+                  {button.name}
+                </motion.button>
+              );
+            })}
         </div>
-        <div>0.00 {mockSymbol}</div>
+        <div>
+          {balance} {mockSymbol}
+        </div>
       </div>
     </motion.div>
   );

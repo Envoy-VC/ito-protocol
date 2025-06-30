@@ -12,6 +12,7 @@ import {
   useReadMockUsdBalanceOf,
   useReadOracleFacetGetLatestPrice,
 } from "@/__generated__/wagmi";
+import { poolId } from "@/lib/data";
 
 import { MintButton } from "./mint-button";
 
@@ -35,7 +36,7 @@ export const FacetContainer = () => {
     });
 
   const { data: ethPriceInUSD } = useReadOracleFacetGetLatestPrice({
-    args: ["0xfaa3722d88d453bb"],
+    args: [poolId],
   });
 
   const amountValue = useMemo(() => {

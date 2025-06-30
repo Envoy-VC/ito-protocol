@@ -63,7 +63,6 @@ contract LiquidityFacetTests is Test, SetUp {
         itoToken.approve(address(liquidityFacet), 100_000 ether);
         liquidityFacet.fundRewards(poolId, 100_000 ether, distributionPeriod);
         vm.stopBroadcast();
-
         return poolId;
     }
 

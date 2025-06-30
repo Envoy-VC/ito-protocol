@@ -6,6 +6,45 @@ import {
 } from "wagmi/codegen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ItoProxy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const itoProxyAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "_contractOwner", internalType: "address", type: "address" },
+      { name: "_diamondCutFacet", internalType: "address", type: "address" },
+      { name: "_ownershipFacet", internalType: "address", type: "address" },
+    ],
+    stateMutability: "payable",
+  },
+  { type: "fallback", stateMutability: "payable" },
+  { type: "receive", stateMutability: "payable" },
+  { type: "error", inputs: [], name: "AlreadyInitialized" },
+  {
+    type: "error",
+    inputs: [
+      {
+        name: "_initializationContractAddress",
+        internalType: "address",
+        type: "address",
+      },
+      { name: "_calldata", internalType: "bytes", type: "bytes" },
+    ],
+    name: "InitializationFunctionReverted",
+  },
+] as const;
+
+export const itoProxyAddress =
+  "0xD7Bc5aEB90efCE77Cdcf42358909D694447f9F20" as const;
+
+export const itoProxyConfig = {
+  address: itoProxyAddress,
+  abi: itoProxyAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ItoToken
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -334,7 +373,7 @@ export const itoTokenAbi = [
 ] as const;
 
 export const itoTokenAddress =
-  "0xBCa528fCc1Ec19fC103Ea855BB3E371465eF74F0" as const;
+  "0x96D48eE5A4C3B7458359D34AFAD1d33B2D51D575" as const;
 
 export const itoTokenConfig = {
   address: itoTokenAddress,
@@ -633,7 +672,7 @@ export const liquidityFacetAbi = [
 ] as const;
 
 export const liquidityFacetAddress =
-  "0x2aB1B11bbbC3ef58ca7b3595103511C9Ea36eFb6" as const;
+  "0xD7Bc5aEB90efCE77Cdcf42358909D694447f9F20" as const;
 
 export const liquidityFacetConfig = {
   address: liquidityFacetAddress,
@@ -969,7 +1008,7 @@ export const mockEthAbi = [
 ] as const;
 
 export const mockEthAddress =
-  "0x1a522B6e68fE4ec21f3ddFC590dfb0957B91d86c" as const;
+  "0xee485ad3d6dF672752291a60002AD48E1573F2D4" as const;
 
 export const mockEthConfig = {
   address: mockEthAddress,
@@ -1305,7 +1344,7 @@ export const mockUsdAbi = [
 ] as const;
 
 export const mockUsdAddress =
-  "0xC94e5f5E4829b2b9AC8938E7Fe4695F6ec1B9145" as const;
+  "0xD4b157E827dCDE062c7A831fc5a77A71AFD5f283" as const;
 
 export const mockUsdConfig = {
   address: mockUsdAddress,
@@ -1352,7 +1391,7 @@ export const oracleFacetAbi = [
 ] as const;
 
 export const oracleFacetAddress =
-  "0x2aB1B11bbbC3ef58ca7b3595103511C9Ea36eFb6" as const;
+  "0xD7Bc5aEB90efCE77Cdcf42358909D694447f9F20" as const;
 
 export const oracleFacetConfig = {
   address: oracleFacetAddress,
@@ -1546,7 +1585,7 @@ export const sammFacetAbi = [
 ] as const;
 
 export const sammFacetAddress =
-  "0x2aB1B11bbbC3ef58ca7b3595103511C9Ea36eFb6" as const;
+  "0xD7Bc5aEB90efCE77Cdcf42358909D694447f9F20" as const;
 
 export const sammFacetConfig = {
   address: sammFacetAddress,
