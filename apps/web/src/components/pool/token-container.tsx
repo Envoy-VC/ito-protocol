@@ -64,7 +64,8 @@ export const TokenContainer = ({
   symbol,
   mockSymbol,
 }: TokenContainerProps) => {
-  const { ethAmount, usdAmount, setEthAmount, status } = usePoolStore();
+  const { ethAmount, usdAmount, setEthAmount, status, setUsdAmount } =
+    usePoolStore();
   const Icon = icon === "eth" ? EthereumIcon : USDCIcon;
   const [isHovered, setIsHovered] = useState(false);
 
@@ -98,14 +99,14 @@ export const TokenContainer = ({
       <div className="flex flex-row items-center justify-between">
         <Input
           className="!text-4xl [&::-moz-appearance]:textfield rounded-none border-none px-0 shadow-none outline-none [&::-webkit-outer-spin-button] focus-visible:border-0 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none"
-          disabled={status !== "idle" || icon === "usd"}
+          disabled={status !== "idle"}
           onChange={(e) => {
             let amount: number | undefined;
             if (e.target.value === "") amount = undefined;
             else amount = Number(e.target.value);
 
             if (icon === "eth") setEthAmount(amount);
-            // else setUsdAmount(amount);
+            else setUsdAmount(amount);
           }}
           placeholder="0"
           type="number"

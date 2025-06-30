@@ -15,11 +15,6 @@ import { DepositButton } from "./deposit-button";
 import { TokenContainer } from "./token-container";
 
 export const DepositTokens = () => {
-  // reserveA: number,
-  // reserveB: number,
-  // volatility: number,
-  // oraclePrice: number,
-
   const { ethAmount, setUsdAmount } = usePoolStore();
 
   const { data: poolState } = useReadLiquidityFacetGetPoolState({
@@ -45,7 +40,7 @@ export const DepositTokens = () => {
       oraclePrice,
     );
     const usdAmount = (ethAmount ?? 0) / targetRatio;
-    setUsdAmount(usdAmount);
+    // setUsdAmount(usdAmount);
   }, [ethAmount, poolState, vol, price, setUsdAmount]);
 
   return (

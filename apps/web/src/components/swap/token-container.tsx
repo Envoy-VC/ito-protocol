@@ -69,7 +69,6 @@ export const TokenContainer = ({
     sellAmount,
     buyAmount,
     setSellAmount,
-    setBuyAmount,
   } = useSwapStore();
   const Icon = icon === "eth" ? EthereumIcon : USDCIcon;
   const [isHovered, setIsHovered] = useState(false);
@@ -111,13 +110,13 @@ export const TokenContainer = ({
       <div className="flex flex-row items-center justify-between">
         <Input
           className="!text-5xl [&::-moz-appearance]:textfield rounded-none border-none px-0 shadow-none outline-none [&::-webkit-outer-spin-button] focus-visible:border-0 focus-visible:ring-0 [&::-webkit-inner-spin-button]:appearance-none"
+          disabled={title === "Buy"}
           onChange={(e) => {
             let amount: number | undefined;
             if (e.target.value === "") amount = undefined;
             else amount = Number(e.target.value);
 
             if (title === "Sell") setSellAmount(amount);
-            else setBuyAmount(amount);
           }}
           onClick={() => setActiveContainer(icon)}
           placeholder="0"

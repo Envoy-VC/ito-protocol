@@ -1,29 +1,38 @@
 import { create } from "zustand";
 
+type Status =
+  | "idle"
+  | "processing"
+  | "approving-eth"
+  | "waiting-for-eth-confirmation"
+  | "sending-request"
+  | "waiting-for-confirmation"
+  | "request-sent"
+  | "error";
+
 interface SwapState {
   activeContainer: "eth" | "usd";
   sellToken: "eth" | "usd";
+  status: Status;
   sellAmount: number | undefined;
-  sellAmountUSD: number;
   buyAmount: number | undefined;
-  buyAmountUSD: number;
+  percentageDifference: number | null;
 }
 
 interface SwapStoreActions {
   setActiveContainer: (activeContainer: "eth" | "usd") => void;
   setSellToken: (sellToken: "eth" | "usd") => void;
   setSellAmount: (sellAmount: number | undefined) => void;
-  setSellAmountUSD: (sellAmountUSD: number) => void;
   setBuyAmount: (buyAmount: number | undefined) => void;
-  setBuyAmountUSD: (buyAmountUSD: number) => void;
+  setStatus: (status: Status) => void;
+  setPercentageDifference: (percentageDifference: number | null) => void;
 }
 
 export const useSwapStore = create<SwapState & SwapStoreActions>()((set) => ({
   activeContainer: "usd",
-  buyAmount: 0,
-  buyAmountUSD: 0,
-  sellAmount: 0,
-  sellAmountUSD: 0,
+  buyAmount: undefined,
+  percentageDifference: null,
+  sellAmount: undefined,
   sellToken: "eth",
   setActiveContainer: (activeContainer: "eth" | "usd") => {
     set(() => ({ activeContainer }));
@@ -31,16 +40,17 @@ export const useSwapStore = create<SwapState & SwapStoreActions>()((set) => ({
   setBuyAmount: (buyAmount: number | undefined) => {
     set(() => ({ buyAmount }));
   },
-  setBuyAmountUSD: (buyAmountUSD: number) => {
-    set(() => ({ buyAmountUSD }));
+  setPercentageDifference: (percentageDifference: number | null) => {
+    set(() => ({ percentageDifference }));
   },
   setSellAmount: (sellAmount: number | undefined) => {
     set(() => ({ sellAmount }));
   },
-  setSellAmountUSD: (sellAmountUSD: number) => {
-    set(() => ({ sellAmountUSD }));
-  },
   setSellToken: (sellToken: "eth" | "usd") => {
     set(() => ({ sellToken }));
   },
+  setStatus: (status: Status) => {
+    set(() => ({ status }));
+  },
+  status: "idle",
 }));
