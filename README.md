@@ -20,7 +20,7 @@ A **Stochastic AMM** extends traditional AMM models (like Uniswap) by incorporat
 
 **Geometric Brownian Motion (GBM)** is a mathematical model for asset price evolution, defined by the SDE:
 <p align="center">
-<img src="./assets/1.png" alt="drawing" width="400"/>
+<img src="./assets/1.png" alt="drawing" width="300"/>
 </p>
 
 - **μ** = drift (average growth)  
@@ -39,7 +39,7 @@ A **Stochastic AMM** extends traditional AMM models (like Uniswap) by incorporat
 In practice, Itô Protocol uses a discrete snapshot at swap time:
 
 <p align="center">
-<img src="./assets/2.png" alt="drawing" width="1000"/>
+<img src="./assets/2.png" alt="drawing" width="600"/>
 </p>
 
 - **Convexity Adjustment** (–σ²·Δt / 2): Corrects the log-normal skew so the expectation isn’t biased upward  
@@ -66,7 +66,7 @@ Here, Δt is the time since the last volatility update—i.e., a single-use nois
 Price in the pool is determined by blending current pool ratio with oracle price, weighted by volatility:
 
 <p align="center">
-<img src="./assets/3.png" alt="drawing" width="800"/>
+<img src="./assets/3.png" alt="drawing" width="500"/>
 </p>
 
 - **currentRatio** = reserveA / reserveB  
