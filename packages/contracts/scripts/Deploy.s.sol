@@ -236,9 +236,6 @@ contract DeployScript is Script {
     }
 }
 
-// TODO:
-// 1. Add Proxy as consumer to VRF Coordinator
-
 // https://api.routescan.io/v2/network/testnet/evm/43113/etherscan
 
 // forge script scripts/Deploy.s.sol:DeployScript --broadcast --rpc-url https://avalanche-fuji-c-chain-rpc.publicnode.com --verifier-url 'https://api.routescan.io/v2/network/testnet/evm/43113/etherscan' --etherscan-api-key "verifyContract" --verify -vvvv
