@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-
+// OpenZeppelin Imports
+import {Create2} from "@openzeppelin/contracts/utils/Create2.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 // Interfaces
 import {IRouter} from "./interfaces/IRouter.sol";
 
-contract ItoRouter  is Ownable, IRouter {
-    mapping(bytes8 => PoolConfig) public poolConfigs;
+// Pool
+import {ItoPool} from "./ItoPool.sol";
 
+contract ItoRouter is Ownable, IRouter {
     // (tokenA,tokenB,baseRewardRate) => poolAddress
     mapping(address => mapping(address => mapping(uint256 => address))) public pools;
 
@@ -17,45 +19,76 @@ contract ItoRouter  is Ownable, IRouter {
     uint80 nextPoolNonce;
     uint8 public version;
 
-
     constructor(address initialOwner) Ownable(initialOwner) {}
 
-    function createPool(PoolConfig calldata config) external onlyOwner returns (address poolAddress) {
+    function createPool(address tokenA, address tokenB, uint256 baseRewardRate, bytes32 salt)
+        external
+        onlyOwner
+        returns (address poolAddress)
+    {
         // 1. Validate Pool Config
-        validatePoolConfig(config);
+        validatePoolConfig(tokenA, tokenB, baseRewardRate);
+
+        bytes memory bytecode = abi.encodePacked(type(ItoPool).creationCode, abi.encode(tokenA, tokenB, baseRewardRate));
+        bytes32 bytecodeHash = keccak256(bytecode);
 
         // 2. Create Pool (Create2 Deterministic Address)
+        poolAddress = Create2.computeAddress(salt, bytecodeHash);
+
+        // Check if Pool contract already exists
+        if (isContract(poolAddress)) {
+            revert PoolAlreadyExists(poolAddress);
+        }
+
+        // Deploy Pool contract
+        Create2.deploy(0, salt, bytecode);
     }
 
-    function getPool(PoolConfig calldata config) external view returns (address poolAddress) {
-        return _getPool(config);
+    function getPool(address tokenA, address tokenB, uint256 baseRewardRate)
+        external
+        view
+        returns (address poolAddress)
+    {
+        return _getPool(tokenA, tokenB, baseRewardRate);
     }
 
-    function _getPool(PoolConfig calldata config) internal view returns (address poolAddress) {
-        return  pools[config.tokenA][config.tokenB][config.baseRewardRate];
+    function _getPool(address tokenA, address tokenB, uint256 baseRewardRate)
+        internal
+        view
+        returns (address poolAddress)
+    {
+        return pools[tokenA][tokenB][baseRewardRate];
     }
 
-    function validatePoolConfig(PoolConfig calldata config) internal view {
+    function validatePoolConfig(address tokenA, address tokenB, uint256 baseRewardRate) internal view {
         // Ensure that Pool does not already exist
-        address poolAddress = _getPool(config);
+        address poolAddress = _getPool(tokenA, tokenB, baseRewardRate);
         if (poolAddress != address(0)) {
             revert PoolAlreadyExists(poolAddress);
         }
 
         // Check for Duplicate Tokens
-        if (config.tokenA == config.tokenB) {
-            revert DuplicateToken(config.tokenA);
+        if (tokenA == tokenB) {
+            revert DuplicateToken(tokenA);
         }
 
         // Check for Zero Addresses
-        if (config.tokenA == address(0) || config.tokenB == address(0)) {
+        if (tokenA == address(0) || tokenB == address(0)) {
             revert ZeroAddress();
         }
     }
 
-    function poolExists(PoolConfig calldata config) public view returns (bool) {
-        address poolAddress = _getPool(config);
+    function poolExists(address tokenA, address tokenB, uint256 baseRewardRate) public view returns (bool) {
+        address poolAddress = _getPool(tokenA, tokenB, baseRewardRate);
         return poolAddress != address(0);
+    }
+
+    function isContract(address account) internal view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        return size > 0;
     }
 
     // Admin functions

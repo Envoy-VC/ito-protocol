@@ -6,15 +6,9 @@ interface IRouter {
     error DuplicateToken(address token);
     error ZeroAddress();
 
-    struct PoolConfig {
-        // Address of ERC20 Token A
-        address tokenA;
-        // Address of ERC20 Token B
-        address tokenB;
-        // Reward tokens per second per 1e18 LP tokens
-        uint256 baseRewardRate;
-    }
+    function createPool(address tokenA, address tokenB, uint256 baseRewardRate, bytes32 salt)
+        external
+        returns (address poolAddress);
 
-    function createPool(PoolConfig calldata config) external returns (address poolAddress);
-    function getPool(PoolConfig calldata config) external view returns (address poolAddress);
+    function getPool(address tokenA, address tokenB, uint256 baseRewardRate) external returns (address poolAddress);
 }
