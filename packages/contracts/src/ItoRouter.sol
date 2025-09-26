@@ -12,15 +12,38 @@ import {IRouter} from "./interfaces/IRouter.sol";
 import {ItoPool} from "./ItoPool.sol";
 
 contract ItoRouter is Ownable, IRouter {
-    // (tokenA,tokenB,baseRewardRate) => poolAddress
+    // =============================================================
+    //                        STATE VARIABLES
+    // =============================================================
+
+    /// @notice Mapping of tokenA => tokenB => baseRewardRate => poolAddress
     mapping(address => mapping(address => mapping(uint256 => address))) public pools;
 
+    /// @notice ERC-20 Reward Token for the protocol
     address public rewardToken;
+
+    /// @notice Next pool nonce
     uint80 nextPoolNonce;
+
+    /// @notice Version of the protocol for future upgrades
     uint8 public version;
 
-    constructor(address initialOwner) Ownable(initialOwner) {}
+    // =============================================================
+    //                         CONSTRUCTOR
+    // =============================================================
 
+    /// @notice Initializes the contract with the deployer as the owner
+    /// @param initialOwner The initial owner of the contract
+    constructor(address initialOwner, address _rewardToken) Ownable(initialOwner) {
+        rewardToken = _rewardToken;
+        version = 1;
+    }
+
+    // =============================================================
+    //                    PUBLIC/EXTERNAL FUNCTIONS
+    // =============================================================
+
+    /// @inheritdoc IRouter
     function createPool(address tokenA, address tokenB, uint256 baseRewardRate, bytes32 salt)
         external
         onlyOwner
@@ -42,8 +65,11 @@ contract ItoRouter is Ownable, IRouter {
 
         // Deploy Pool contract
         Create2.deploy(0, salt, bytecode);
+
+        emit PoolCreated(tokenA, tokenB, baseRewardRate, poolAddress);
     }
 
+    /// @inheritdoc IRouter
     function getPool(address tokenA, address tokenB, uint256 baseRewardRate)
         external
         view
@@ -51,6 +77,10 @@ contract ItoRouter is Ownable, IRouter {
     {
         return _getPool(tokenA, tokenB, baseRewardRate);
     }
+
+    // =============================================================
+    //                    INTERNAL/PRIVATE FUNCTIONS
+    // =============================================================
 
     function _getPool(address tokenA, address tokenB, uint256 baseRewardRate)
         internal
@@ -91,11 +121,12 @@ contract ItoRouter is Ownable, IRouter {
         return size > 0;
     }
 
-    // Admin functions
-    function setRewardToken(address _rewardToken) external onlyOwner {
-        rewardToken = _rewardToken;
-    }
+    // =============================================================
+    //                       ADMIN FUNCTIONS
+    // =============================================================
 
+    /// @notice Sets the version of the protocol
+    /// @param _version The version of the protocol
     function setVersion(uint8 _version) external onlyOwner {
         version = _version;
     }
