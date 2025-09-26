@@ -14,6 +14,8 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
+  "solidity.packageDefaultDependenciesContractsDirectory": "src",
+  "solidity.packageDefaultDependenciesDirectory": "dependencies",
   "tailwindCSS.classAttributes": [
     "class",
     "className",
@@ -22,11 +24,7 @@
   ],
   "tailwindCSS.classFunctions": ["tw", "clsx", "cva"],
   "tailwindCSS.experimental.configFile": {
-    "packages/ui/src/styles/globals.css": [
-      "apps/web/**",
-      "packages/ui/src/**",
-      "apps/web-vite/**"
-    ]
+    "packages/ui/src/styles/globals.css": ["apps/web/**", "packages/ui/src/**"]
   },
   "typescript.tsdk": "node_modules/typescript/lib"
 }
