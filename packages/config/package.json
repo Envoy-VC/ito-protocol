@@ -1,7 +1,7 @@
 {
   "author": "Vedant Chainani <vedantchainani1084@gmail.com>",
   "devDependencies": {
-    "@biomejs/biome": "^2.0.5"
+    "@biomejs/biome": "2.2.4"
   },
   "exports": {
     "./biome": "./biome/base.json",
@@ -18,7 +18,7 @@
   },
   "files": ["./biome", "./tsconfig"],
   "license": "MIT",
-  "name": "@repo/config",
+  "name": "@ito-protocol/config",
   "scripts": {
     "format": "pnpm exec biome format",
     "format:write": "pnpm exec biome format --write",

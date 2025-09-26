@@ -137,6 +137,7 @@
         "noAssignInExpressions": "off",
         "noEmptyBlockStatements": "error",
         "noMisplacedAssertion": "error",
+        "noUnknownAtRules": "off",
         "useAwait": "error",
         "useErrorMessage": "error",
         "useNumberToFixedDigitsArgument": "error"
