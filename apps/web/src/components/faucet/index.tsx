@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 
 import { Input } from "@ito-protocol/ui/components/input";
-import { BitcoinIcon, USDCIcon } from "@ito-protocol/ui/icons";
+import { EthereumIcon, USDCIcon } from "@ito-protocol/ui/icons";
 import { cn } from "@ito-protocol/ui/lib/utils";
 import { ChevronsUpDown } from "lucide-react";
 import { formatEther, zeroAddress } from "viem";
 import { useAccount } from "wagmi";
 
 import {
-  useReadMockBtcBalanceOf,
+  useReadMockEthBalanceOf,
   useReadMockOracleGetPrice,
   useReadMockUsdcBalanceOf,
 } from "@/__generated__/wagmi";
@@ -20,12 +20,12 @@ export const FacetContainer = () => {
     "idle" | "processing" | "waiting-for-confirmation" | "success" | "error"
   >("idle");
   const [amount, setAmount] = useState<number | undefined>(undefined);
-  const [currentToken, setCurrentToken] = useState<"btc" | "usd">("btc");
+  const [currentToken, setCurrentToken] = useState<"eth" | "usd">("eth");
 
   const { address } = useAccount();
 
-  const { data: mockBtcBalance, refetch: refetchMockBtcBalance } =
-    useReadMockBtcBalanceOf({
+  const { data: mockEthBalance, refetch: refetchMockEthBalance } =
+    useReadMockEthBalanceOf({
       args: [address ?? zeroAddress],
     });
 
@@ -34,34 +34,34 @@ export const FacetContainer = () => {
       args: [address ?? zeroAddress],
     });
 
-  const { data: BtcPriceInUSD } = useReadMockOracleGetPrice({});
+  const { data: ethPriceInUsd } = useReadMockOracleGetPrice({});
 
   const amountValue = useMemo(() => {
     const a = amount ?? 0;
-    const currentPrice = Number(formatEther(BtcPriceInUSD ?? 0n));
-    if (currentToken === "btc") return (a * currentPrice).toFixed(4);
+    const currentPrice = Number(formatEther(ethPriceInUsd ?? 0n));
+    if (currentToken === "eth") return (a * currentPrice).toFixed(4);
     return a;
-  }, [currentToken, amount, BtcPriceInUSD]);
+  }, [currentToken, amount, ethPriceInUsd]);
 
   const refetchAll = async () => {
-    await refetchMockBtcBalance();
+    await refetchMockEthBalance();
     await refetchMockUsdBalance();
   };
 
   const balance = useMemo(() => {
-    const btc = Number(formatEther(mockBtcBalance ?? 0n)).toFixed(4);
+    const btc = Number(formatEther(mockEthBalance ?? 0n)).toFixed(4);
     const usd = Number(formatEther(mockUsdBalance ?? 0n)).toFixed(2);
-    if (currentToken === "btc") return btc;
+    if (currentToken === "eth") return btc;
     return usd;
-  }, [mockBtcBalance, mockUsdBalance, currentToken]);
+  }, [mockEthBalance, mockUsdBalance, currentToken]);
 
   const { Icon, symbol, mockSymbol } = useMemo(() => {
-    if (currentToken === "btc") {
+    if (currentToken === "eth") {
       return {
         // biome-ignore lint/style/useNamingConvention: safe
-        Icon: BitcoinIcon,
-        mockSymbol: "mBTC",
-        symbol: "BTC",
+        Icon: EthereumIcon,
+        mockSymbol: "mETH",
+        symbol: "ETH",
       };
     }
     return {
@@ -100,7 +100,7 @@ export const FacetContainer = () => {
           <button
             className="flex cursor-pointer flex-row items-center gap-1 rounded-3xl border-[1.5px] px-1 py-[3px] shadow-[rgba(255,255,255,0.04)_0px_0px_10px]"
             onClick={() => {
-              setCurrentToken(currentToken === "btc" ? "usd" : "btc");
+              setCurrentToken(currentToken === "eth" ? "usd" : "eth");
             }}
             type="button"
           >

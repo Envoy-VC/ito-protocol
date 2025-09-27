@@ -895,10 +895,10 @@ export const itoTokenConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MockBTC
+// MockETH
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const mockBtcAbi = [
+export const mockEthAbi = [
   {
     inputs: [
       { internalType: "address", name: "initialOwner", type: "address" },
@@ -1222,12 +1222,12 @@ export const mockBtcAbi = [
   },
 ] as const;
 
-export const mockBtcAddress =
+export const mockEthAddress =
   "0x0000000000000000000000000000000000000000" as const;
 
-export const mockBtcConfig = {
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const mockEthConfig = {
+  abi: mockEthAbi,
+  address: mockEthAddress,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2503,331 +2503,331 @@ export const useWatchItoTokenTransferEvent =
   });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__
  */
-export const useReadMockBtc = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEth = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"DOMAIN_SEPARATOR"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"DOMAIN_SEPARATOR"`
  */
-export const useReadMockBtcDomainSeparator =
+export const useReadMockEthDomainSeparator =
   /*#__PURE__*/ createUseReadContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "DOMAIN_SEPARATOR",
   });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"allowance"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"allowance"`
  */
-export const useReadMockBtcAllowance = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthAllowance = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "allowance",
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"balanceOf"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"balanceOf"`
  */
-export const useReadMockBtcBalanceOf = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthBalanceOf = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "balanceOf",
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"decimals"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"decimals"`
  */
-export const useReadMockBtcDecimals = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthDecimals = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "decimals",
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"eip712Domain"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"eip712Domain"`
  */
-export const useReadMockBtcEip712Domain = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthEip712Domain = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "eip712Domain",
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"name"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"name"`
  */
-export const useReadMockBtcName = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthName = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "name",
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"nonces"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"nonces"`
  */
-export const useReadMockBtcNonces = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthNonces = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "nonces",
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"owner"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"owner"`
  */
-export const useReadMockBtcOwner = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthOwner = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "owner",
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"symbol"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"symbol"`
  */
-export const useReadMockBtcSymbol = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthSymbol = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "symbol",
 });
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"totalSupply"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"totalSupply"`
  */
-export const useReadMockBtcTotalSupply = /*#__PURE__*/ createUseReadContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useReadMockEthTotalSupply = /*#__PURE__*/ createUseReadContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "totalSupply",
 });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__
  */
-export const useWriteMockBtc = /*#__PURE__*/ createUseWriteContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useWriteMockEth = /*#__PURE__*/ createUseWriteContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
 });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"approve"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"approve"`
  */
-export const useWriteMockBtcApprove = /*#__PURE__*/ createUseWriteContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useWriteMockEthApprove = /*#__PURE__*/ createUseWriteContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "approve",
 });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"burn"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"burn"`
  */
-export const useWriteMockBtcBurn = /*#__PURE__*/ createUseWriteContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useWriteMockEthBurn = /*#__PURE__*/ createUseWriteContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "burn",
 });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"burnFrom"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"burnFrom"`
  */
-export const useWriteMockBtcBurnFrom = /*#__PURE__*/ createUseWriteContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useWriteMockEthBurnFrom = /*#__PURE__*/ createUseWriteContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "burnFrom",
 });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"mint"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"mint"`
  */
-export const useWriteMockBtcMint = /*#__PURE__*/ createUseWriteContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useWriteMockEthMint = /*#__PURE__*/ createUseWriteContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "mint",
 });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"permit"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"permit"`
  */
-export const useWriteMockBtcPermit = /*#__PURE__*/ createUseWriteContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useWriteMockEthPermit = /*#__PURE__*/ createUseWriteContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "permit",
 });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"renounceOwnership"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"renounceOwnership"`
  */
-export const useWriteMockBtcRenounceOwnership =
+export const useWriteMockEthRenounceOwnership =
   /*#__PURE__*/ createUseWriteContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "renounceOwnership",
   });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"transfer"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"transfer"`
  */
-export const useWriteMockBtcTransfer = /*#__PURE__*/ createUseWriteContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useWriteMockEthTransfer = /*#__PURE__*/ createUseWriteContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "transfer",
 });
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"transferFrom"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"transferFrom"`
  */
-export const useWriteMockBtcTransferFrom = /*#__PURE__*/ createUseWriteContract(
-  { abi: mockBtcAbi, address: mockBtcAddress, functionName: "transferFrom" },
+export const useWriteMockEthTransferFrom = /*#__PURE__*/ createUseWriteContract(
+  { abi: mockEthAbi, address: mockEthAddress, functionName: "transferFrom" },
 );
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"transferOwnership"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"transferOwnership"`
  */
-export const useWriteMockBtcTransferOwnership =
+export const useWriteMockEthTransferOwnership =
   /*#__PURE__*/ createUseWriteContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "transferOwnership",
   });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__
  */
-export const useSimulateMockBtc = /*#__PURE__*/ createUseSimulateContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useSimulateMockEth = /*#__PURE__*/ createUseSimulateContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
 });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"approve"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"approve"`
  */
-export const useSimulateMockBtcApprove =
+export const useSimulateMockEthApprove =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "approve",
   });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"burn"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"burn"`
  */
-export const useSimulateMockBtcBurn = /*#__PURE__*/ createUseSimulateContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useSimulateMockEthBurn = /*#__PURE__*/ createUseSimulateContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "burn",
 });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"burnFrom"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"burnFrom"`
  */
-export const useSimulateMockBtcBurnFrom =
+export const useSimulateMockEthBurnFrom =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "burnFrom",
   });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"mint"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"mint"`
  */
-export const useSimulateMockBtcMint = /*#__PURE__*/ createUseSimulateContract({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useSimulateMockEthMint = /*#__PURE__*/ createUseSimulateContract({
+  abi: mockEthAbi,
+  address: mockEthAddress,
   functionName: "mint",
 });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"permit"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"permit"`
  */
-export const useSimulateMockBtcPermit = /*#__PURE__*/ createUseSimulateContract(
-  { abi: mockBtcAbi, address: mockBtcAddress, functionName: "permit" },
+export const useSimulateMockEthPermit = /*#__PURE__*/ createUseSimulateContract(
+  { abi: mockEthAbi, address: mockEthAddress, functionName: "permit" },
 );
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"renounceOwnership"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"renounceOwnership"`
  */
-export const useSimulateMockBtcRenounceOwnership =
+export const useSimulateMockEthRenounceOwnership =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "renounceOwnership",
   });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"transfer"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"transfer"`
  */
-export const useSimulateMockBtcTransfer =
+export const useSimulateMockEthTransfer =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "transfer",
   });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"transferFrom"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"transferFrom"`
  */
-export const useSimulateMockBtcTransferFrom =
+export const useSimulateMockEthTransferFrom =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "transferFrom",
   });
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockBtcAbi}__ and `functionName` set to `"transferOwnership"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockEthAbi}__ and `functionName` set to `"transferOwnership"`
  */
-export const useSimulateMockBtcTransferOwnership =
+export const useSimulateMockEthTransferOwnership =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     functionName: "transferOwnership",
   });
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockBtcAbi}__
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockEthAbi}__
  */
-export const useWatchMockBtcEvent = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: mockBtcAbi,
-  address: mockBtcAddress,
+export const useWatchMockEthEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: mockEthAbi,
+  address: mockEthAddress,
 });
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockBtcAbi}__ and `eventName` set to `"Approval"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockEthAbi}__ and `eventName` set to `"Approval"`
  */
-export const useWatchMockBtcApprovalEvent =
+export const useWatchMockEthApprovalEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     eventName: "Approval",
   });
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockBtcAbi}__ and `eventName` set to `"EIP712DomainChanged"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockEthAbi}__ and `eventName` set to `"EIP712DomainChanged"`
  */
-export const useWatchMockBtcEip712DomainChangedEvent =
+export const useWatchMockEthEip712DomainChangedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     eventName: "EIP712DomainChanged",
   });
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockBtcAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockEthAbi}__ and `eventName` set to `"OwnershipTransferred"`
  */
-export const useWatchMockBtcOwnershipTransferredEvent =
+export const useWatchMockEthOwnershipTransferredEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     eventName: "OwnershipTransferred",
   });
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockBtcAbi}__ and `eventName` set to `"Transfer"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link mockEthAbi}__ and `eventName` set to `"Transfer"`
  */
-export const useWatchMockBtcTransferEvent =
+export const useWatchMockEthTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: mockBtcAbi,
-    address: mockBtcAddress,
+    abi: mockEthAbi,
+    address: mockEthAddress,
     eventName: "Transfer",
   });
 

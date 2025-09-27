@@ -5,14 +5,14 @@ import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 
-import { mockBtcConfig, mockUsdcConfig } from "@/__generated__/wagmi";
+import { mockEthConfig, mockUsdcConfig } from "@/__generated__/wagmi";
 import { sleep } from "@/lib/helpers";
 import { wagmiConfig } from "@/providers/web3";
 
 interface MintButtonProps {
   amount: number | undefined;
   setAmount: (amount: number | undefined) => void;
-  currentToken: "btc" | "usd";
+  currentToken: "eth" | "usd";
   refetch: () => Promise<void>;
   mintState:
     | "idle"
@@ -51,7 +51,7 @@ export const MintButton = ({
   const { address } = useAccount();
 
   const onMint = async () => {
-    const config = currentToken === "btc" ? mockBtcConfig : mockUsdcConfig;
+    const config = currentToken === "eth" ? mockEthConfig : mockUsdcConfig;
     if (amount === undefined) return;
     if (amount <= 0) return;
     try {

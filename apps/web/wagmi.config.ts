@@ -6,13 +6,13 @@ import { abi as itoPool } from "../../packages/contracts/out/ItoPool.sol/ItoPool
 import { abi as itoRouterAbi } from "../../packages/contracts/out/ItoRouter.sol/ItoRouter.json";
 // Tokens
 import { abi as itoTokenAbi } from "../../packages/contracts/out/ItoToken.sol/ItoToken.json";
-import { abi as mockBTCAbi } from "../../packages/contracts/out/MockBTC.sol/MockBTC.json";
+import { abi as mockETHAbi } from "../../packages/contracts/out/MockETH.sol/MockETH.json";
 import { abi as mockOracle } from "../../packages/contracts/out/MockOracle.sol/MockOracle.json";
 import { abi as mockUSDCAbi } from "../../packages/contracts/out/MockUSD.sol/MockUSDC.json";
 
 const itoRouterAddress = "0x0000000000000000000000000000000000000000";
 
-const mockBTCAddress = "0x0000000000000000000000000000000000000000";
+const mockETHAddress = "0x0000000000000000000000000000000000000000";
 const mockUSDAddress = "0x0000000000000000000000000000000000000000";
 
 const itoTokenAddress = "0x0000000000000000000000000000000000000000";
@@ -38,9 +38,9 @@ export default defineConfig({
       name: "MockOracle",
     },
     {
-      abi: mockBTCAbi as Abi,
-      address: mockBTCAddress,
-      name: "MockBTC",
+      abi: mockETHAbi as Abi,
+      address: mockETHAddress,
+      name: "MockETH",
     },
     {
       abi: mockUSDCAbi as Abi,

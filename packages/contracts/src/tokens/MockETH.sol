@@ -6,8 +6,8 @@ import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC2
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract MockBTC is ERC20, ERC20Burnable, Ownable, ERC20Permit {
-    constructor(address initialOwner) ERC20("MockBTC", "mBTC") Ownable(initialOwner) ERC20Permit("ITO Token") {}
+contract MockETH is ERC20, ERC20Burnable, Ownable, ERC20Permit {
+    constructor(address initialOwner) ERC20("MockETH", "mETH") Ownable(initialOwner) ERC20Permit("ITO Token") {}
 
     function mint(address to, uint256 amount) public {
         _mint(to, amount);
