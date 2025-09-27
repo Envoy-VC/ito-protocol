@@ -13,7 +13,7 @@ import {
   useReadMockUsdcBalanceOf,
 } from "@/__generated__/wagmi";
 
-// import { MintButton } from "./mint-button";
+import { MintButton } from "./mint-button";
 
 export const FacetContainer = () => {
   const [mintState, setMintState] = useState<
@@ -116,14 +116,14 @@ export const FacetContainer = () => {
           </div>
         </div>
       </div>
-      {/* <MintButton
+      <MintButton
         amount={amount}
         currentToken={currentToken}
         mintState={mintState}
         refetch={refetchAll}
         setAmount={setAmount}
         setMintState={setMintState}
-      /> */}
+      />
     </div>
   );
 };

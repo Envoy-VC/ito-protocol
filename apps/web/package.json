@@ -8,6 +8,7 @@
     "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-router": "^1.131",
     "@tanstack/router-devtools": "^1.132.7",
+    "@wagmi/core": "^2.21.2",
     "lucide-react": "^0.544.0",
     "motion": "^12.23.22",
     "react": "^19.1.1",
