@@ -28,4 +28,12 @@ contract MockOracle is Ownable {
     function setVolatility(address tokenA, address tokenB, uint256 _newVolatility) public onlyOwner {
         volatility[tokenA][tokenB] = _newVolatility;
     }
+
+    function setPriceAndVolatility(address tokenA, address tokenB, uint256 _newPrice, uint256 _newVolatility)
+        public
+        onlyOwner
+    {
+        price[tokenA][tokenB] = _newPrice;
+        volatility[tokenA][tokenB] = _newVolatility;
+    }
 }
