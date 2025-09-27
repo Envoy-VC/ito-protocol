@@ -14,7 +14,7 @@ import {MockETH} from "src/tokens/MockETH.sol";
 
 import {MockOracle} from "src/mocks/MockOracle.sol";
 
-contract Deploy is Script {
+contract DeployScript is Script {
     ItoRouter public router;
     ItoToken public rewardToken;
     MockOracle public oracle;

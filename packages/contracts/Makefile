@@ -53,13 +53,9 @@ deploy-anvil:
 	@echo "🚀 Deploying to local anvil..."
 	forge script script/Deploy.s.sol:Deploy --rpc-url http://127.0.0.1:8545 --broadcast
 
-deploy-citrea-testnet:
+deploy-citrea:
 	@echo "🚀 Deploying to Citrea Testnet..."
-	if [ -z "$$CITREA_RPC_URL" ]; then \
-		echo "⚠️ Citrea RPC Url is not set. Set CITREA_RPC_URL in .env file."; \
-		exit 1; \
-	fi
-	forge script script/Deploy.s.sol:DeployScript --rpc-url $(CITREA_RPC_URL)  --account $(ACCOUNT_NAME) --broadcast --verify --verifier blockscout --verifier-url https://explorer.testnet.citrea.xyz/api/ -vvvv
+	forge script script/Deploy.s.sol:DeployScript --rpc-url https://rpc.testnet.citrea.xyz --account $(ACCOUNT_NAME) --broadcast --verify --verifier blockscout --verifier-url https://explorer.testnet.citrea.xyz/api/ -vvvv
 
 ###################
 ### Diagnostics ###

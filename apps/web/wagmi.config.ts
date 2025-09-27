@@ -2,6 +2,8 @@ import { defineConfig } from "@wagmi/cli";
 import { react } from "@wagmi/cli/plugins";
 import type { Abi } from "viem";
 
+import { ContractAddress } from "@/data";
+
 import { abi as itoPool } from "../../packages/contracts/out/ItoPool.sol/ItoPool.json";
 import { abi as itoRouterAbi } from "../../packages/contracts/out/ItoRouter.sol/ItoRouter.json";
 // Tokens
@@ -10,15 +12,15 @@ import { abi as mockETHAbi } from "../../packages/contracts/out/MockETH.sol/Mock
 import { abi as mockOracle } from "../../packages/contracts/out/MockOracle.sol/MockOracle.json";
 import { abi as mockUSDCAbi } from "../../packages/contracts/out/MockUSD.sol/MockUSDC.json";
 
-const itoRouterAddress = "0x0000000000000000000000000000000000000000";
+const itoRouterAddress = ContractAddress.router;
 
-const mockETHAddress = "0x0000000000000000000000000000000000000000";
-const mockUSDAddress = "0x0000000000000000000000000000000000000000";
+const mockETHAddress = ContractAddress.mockETH;
+const mockUSDAddress = ContractAddress.mockUSD;
 
-const itoTokenAddress = "0x0000000000000000000000000000000000000000";
-const mockOracleAddress = "0x0000000000000000000000000000000000000000";
+const itoTokenAddress = ContractAddress.itoToken;
+const mockOracleAddress = ContractAddress.oracle;
 
-const itoPoolAddress = "0x0000000000000000000000000000000000000000";
+const itoPoolAddress = ContractAddress.pool;
 
 export default defineConfig({
   contracts: [
