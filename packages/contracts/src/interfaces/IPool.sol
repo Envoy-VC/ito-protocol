@@ -7,6 +7,7 @@ interface IPool {
     error InsufficientReserves(address token);
 
     error InvalidAmount();
+    error NotOwner();
 
     error RequestAlreadyFulfilled();
 

@@ -12,6 +12,9 @@ import {StochasticMath} from "./libraries/StochasticMath.sol";
 // Interfaces
 import {IPool} from "./interfaces/IPool.sol";
 
+// Router
+import {ItoRouter} from "./ItoRouter.sol";
+
 contract ItoPool is IPool, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
@@ -25,13 +28,13 @@ contract ItoPool is IPool, ReentrancyGuard {
     /// @notice The address of the tokenB for the pool
     address public immutable tokenB;
 
-    /// @notice The base reward rate for the pool
-    uint256 public immutable baseRewardRate;
-
     // =============================================================
     //                           State Variables
     // =============================================================
-    address public rewardToken;
+    ItoRouter public router;
+
+    /// @notice The base reward rate for the pool
+    uint256 public baseRewardRate;
 
     /// @notice The current state of the pool
     PoolState public poolState;
@@ -45,13 +48,15 @@ contract ItoPool is IPool, ReentrancyGuard {
     // =============================================================
     //                           Constructor
     // =============================================================
-    constructor(address _tokenA, address _tokenB, uint256 _baseRewardRate) {
+    constructor(address _tokenA, address _tokenB, uint256 _baseRewardRate, address _router) {
         tokenA = _tokenA;
         tokenB = _tokenB;
         baseRewardRate = _baseRewardRate;
 
         poolState =
             PoolState({reserveA: 0, reserveB: 0, totalLPTokens: 0, lastUpdate: block.timestamp, accRewardPerShare: 0});
+
+        router = ItoRouter(_router);
     }
 
     // =============================================================
@@ -258,6 +263,16 @@ contract ItoPool is IPool, ReentrancyGuard {
         request.isFulfilled = true;
     }
 
+    function fundRewards(uint256 amount, uint256 distributionPeriod) public {
+        if (msg.sender != router.owner()) {
+            revert NotOwner();
+        }
+        // Transfer reward tokens from sender
+        IERC20(router.rewardToken()).safeTransferFrom(msg.sender, address(this), amount);
+
+        baseRewardRate += amount / distributionPeriod;
+    }
+
     /// @inheritdoc IPool
     function getPoolState() external view returns (PoolState memory) {
         return poolState;
@@ -281,7 +296,7 @@ contract ItoPool is IPool, ReentrancyGuard {
             uint256 volatilityBonus = (pending * volatility) / (2 * StochasticMath.PRECISION);
             uint256 totalReward = pending + volatilityBonus;
 
-            IERC20(rewardToken).safeTransfer(user, totalReward);
+            IERC20(router.rewardToken()).safeTransfer(user, totalReward);
 
             emit RewardsClaimed(user, totalReward);
         }
