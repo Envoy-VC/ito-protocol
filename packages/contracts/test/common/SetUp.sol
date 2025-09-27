@@ -7,6 +7,8 @@ import {Vm} from "forge-std/Vm.sol";
 import {ItoRouter} from "src/ItoRouter.sol";
 import {ItoToken} from "src/tokens/ItoToken.sol";
 
+import {MockOracle} from "src/mocks/MockOracle.sol";
+
 contract SetUp is Test {
     struct Accounts {
         Vm.Wallet richard;
@@ -18,6 +20,7 @@ contract SetUp is Test {
 
     ItoRouter public router;
     ItoToken public rewardToken;
+    MockOracle public oracle;
 
     Accounts public accounts;
 
@@ -26,7 +29,9 @@ contract SetUp is Test {
         vm.startBroadcast(accounts.richard.addr);
 
         rewardToken = new ItoToken(accounts.richard.addr);
-        router = new ItoRouter(accounts.richard.addr, address(rewardToken));
+        oracle = new MockOracle(accounts.richard.addr, 120_000e18, 0.5e18);
+
+        router = new ItoRouter(accounts.richard.addr, address(rewardToken), address(oracle));
 
         vm.stopBroadcast();
     }

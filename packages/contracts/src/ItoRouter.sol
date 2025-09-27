@@ -22,6 +22,9 @@ contract ItoRouter is Ownable, IRouter {
     /// @notice ERC-20 Reward Token for the protocol
     address public rewardToken;
 
+    /// @notice Oracle for the protocol
+    address public oracle;
+
     /// @notice Next pool nonce
     uint80 nextPoolNonce;
 
@@ -34,9 +37,10 @@ contract ItoRouter is Ownable, IRouter {
 
     /// @notice Initializes the contract with the deployer as the owner
     /// @param initialOwner The initial owner of the contract
-    constructor(address initialOwner, address _rewardToken) Ownable(initialOwner) {
+    constructor(address initialOwner, address _rewardToken, address _oracle) Ownable(initialOwner) {
         rewardToken = _rewardToken;
         version = 1;
+        oracle = _oracle;
     }
 
     // =============================================================

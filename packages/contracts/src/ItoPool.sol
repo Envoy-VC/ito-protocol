@@ -11,6 +11,7 @@ import {StochasticMath} from "./libraries/StochasticMath.sol";
 
 // Interfaces
 import {IPool} from "./interfaces/IPool.sol";
+import {IOracle} from "./interfaces/IOracle.sol";
 
 // Router
 import {ItoRouter} from "./ItoRouter.sol";
@@ -351,14 +352,12 @@ contract ItoPool is IPool, ReentrancyGuard {
         return (position.lpTokens * accRewardPerShare) / StochasticMath.PRECISION - position.rewardDebt;
     }
 
-    function _getVolatility() internal pure returns (uint256) {
-        // 0.5% volatility
-        return 5e17;
+    function _getVolatility() internal view returns (uint256) {
+        return IOracle(router.oracle()).getVolatility(tokenA, tokenB);
     }
 
-    function _getPrice() internal pure returns (uint256) {
-        // 120k
-        return 120000e18;
+    function _getPrice() internal view returns (uint256) {
+        return IOracle(router.oracle()).getPrice(tokenA, tokenB);
     }
 
     function _calculateExponent(uint256 volatility, uint256 timeDelta, int256 z0) private pure returns (int256) {

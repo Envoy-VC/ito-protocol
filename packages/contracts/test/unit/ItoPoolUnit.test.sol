@@ -45,6 +45,22 @@ contract ItoRouterUnitTest is Test, SetUp {
         vm.stopBroadcast();
     }
 
+    function _addLiquidity() internal {
+        address user = accounts.richard.addr;
+        vm.startBroadcast(user);
+        uint256 amountADesired = 1e18;
+        uint256 amountBDesired = 120_000e18;
+
+        mockBTC.mint(user, 1e18);
+        mockUSD.mint(user, 120_000e18);
+        mockBTC.approve(address(pool), 1e18);
+        mockUSD.approve(address(pool), 120_000e18);
+
+        pool.addLiquidity(amountADesired, amountBDesired);
+
+        vm.stopBroadcast();
+    }
+
     function test_addLiquidity() public {
         // Mint Mock Tokens for User
         address user = accounts.dinesh.addr;
@@ -84,5 +100,31 @@ contract ItoRouterUnitTest is Test, SetUp {
         vm.stopBroadcast();
     }
 
-    
+    function test_swap() public {
+        _addLiquidity();
+
+        address user = accounts.dinesh.addr;
+
+        vm.startBroadcast(user);
+
+        // mint and approve tokens for pool
+        mockBTC.mint(user, 0.5e18);
+        mockBTC.approve(address(pool), 0.5e18);
+
+        // Log Balance before Swap
+        console.log("\nBalance Before Swap");
+        console.log("BTC Balance: ", mockBTC.balanceOf(user).parseDecimal(18, 4));
+        console.log("USD Balance: ", mockUSD.balanceOf(user).parseDecimal(18, 4));
+
+        uint256 requestId = pool.swap(address(mockBTC), 0.5e18);
+
+        uint256[] memory randomWords = new uint256[](1);
+        randomWords[0] = uint256(keccak256(abi.encodePacked(block.timestamp, block.number)));
+
+        pool.fulfillSwap(requestId, randomWords);
+
+        console.log("\nBalance After Swap");
+        console.log("BTC Balance: ", mockBTC.balanceOf(user).parseDecimal(18, 4));
+        console.log("USD Balance: ", mockUSD.balanceOf(user).parseDecimal(18, 4));
+    }
 }
