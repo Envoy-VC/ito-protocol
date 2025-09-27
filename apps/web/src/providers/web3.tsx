@@ -1,4 +1,8 @@
-import { type Chain, citreaTestnet, mainnet } from "@reown/appkit/networks";
+import {
+  type Chain,
+  citreaTestnet,
+  // rootstockTestnet,
+} from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { WagmiProvider } from "wagmi";
@@ -14,7 +18,7 @@ const metadata = {
   url: "https://ito-protocol.vercel.app",
 };
 
-const networks = [citreaTestnet, mainnet] as [Chain, Chain];
+const networks = [citreaTestnet] as [Chain];
 
 const wagmiAdapter = new WagmiAdapter({
   networks,
@@ -26,7 +30,7 @@ export const wagmiConfig = wagmiAdapter.wagmiConfig;
 
 createAppKit({
   adapters: [wagmiAdapter],
-  defaultNetwork: citreaTestnet,
+  defaultNetwork: networks[0],
   features: {
     analytics: false,
   },

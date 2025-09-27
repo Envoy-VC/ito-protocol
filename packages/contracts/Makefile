@@ -56,6 +56,9 @@ deploy-anvil:
 deploy-citrea:
 	@echo "🚀 Deploying to Citrea Testnet..."
 	forge script script/Deploy.s.sol:DeployScript --rpc-url https://rpc.testnet.citrea.xyz --account $(ACCOUNT_NAME) --broadcast --verify --verifier blockscout --verifier-url https://explorer.testnet.citrea.xyz/api/ -vvvv
+deploy-rootstock:
+	@echo "🚀 Deploying to Rootstock Testnet..."
+	forge script script/Deploy.s.sol:DeployScript --rpc-url https://public-node.testnet.rsk.co --account $(ACCOUNT_NAME) --broadcast --legacy --verify --verifier blockscout --verifier-url https://rootstock-testnet.blockscout.com/api/ -vvvv
 
 ###################
 ### Diagnostics ###
@@ -84,6 +87,7 @@ help:
 	@echo "  make deploy            - Deploy with args"
 	@echo "  make deploy-anvil      - Deploy locally"
 	@echo "  make deploy-citrea     - Deploy to Citrea testnet"
+	@echo "  make deploy-rootstock  - Deploy to Rootstock testnet"
 	@echo "  make gas-report        - Capture gas costs"
 	@echo "  make clean             - Clean build artifacts"
 

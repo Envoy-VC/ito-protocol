@@ -31,7 +31,6 @@ export const SwapButton = () => {
       setStatus("processing");
 
       // Check if approval is needed
-
       setStatus("approving-eth");
       const hash1 = await writeContract(wagmiConfig, {
         ...mockEthConfig,
@@ -50,7 +49,6 @@ export const SwapButton = () => {
       });
       setStatus("waiting-for-confirmation");
       const receipt = await waitForTransactionReceipt(wagmiConfig, {
-        confirmations: 5,
         hash,
       });
       const logs = parseEventLogs({
@@ -60,7 +58,7 @@ export const SwapButton = () => {
       console.log(logs);
       const requestId = logs.find((l) => l.eventName === "SwapInitiated")?.args
         .requestId;
-      if (!requestId) {
+      if (requestId === undefined) {
         throw new Error("Request Id not found");
       }
       setStatus("request-sent");
