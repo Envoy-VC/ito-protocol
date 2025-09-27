@@ -1,10 +1,18 @@
 import { Button } from "@ito-protocol/ui/components/button";
-import { createFileRoute } from "@tanstack/react-router";
+import Spline from "@splinetool/react-spline";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 const HomeComponent = () => {
   return (
-    <div className="">
-      <Button>Hello World</Button>
+    <div className="hide-scrollbar max-h-screen overflow-hidden">
+      <div className="h-screen scale-[120%]">
+        <Spline scene="https://prod.spline.design/uNUXHjukp7GKAj4f/scene.splinecode" />
+      </div>
+      <div className="absolute top-[45%] right-1/2 translate-x-1/2">
+        <Button className="!rounded-2xl" size="lg" variant="default">
+          <Link to="/dashboard">Launch App</Link>
+        </Button>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
 
 @source "../../../../packages/ui/src/**/*.{js,ts,jsx,tsx}";
 

@@ -1,9 +1,12 @@
 {
   "dependencies": {
     "@ito-protocol/ui": "workspace:*",
+    "@reown/appkit": "^1.8.7",
+    "@reown/appkit-adapter-wagmi": "^1.8.7",
+    "@splinetool/react-spline": "^4.1.0",
     "@t3-oss/env-core": "^0.13.8",
     "@tanstack/react-query": "^5.90.2",
-    "@tanstack/react-router": "^1.132.7",
+    "@tanstack/react-router": "^1.131",
     "@tanstack/router-devtools": "^1.132.7",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
@@ -19,7 +22,7 @@
     "@ito-protocol/config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/vite": "^4.1.13",
-    "@tanstack/router-plugin": "^1.132.7",
+    "@tanstack/router-plugin": "^1.131",
     "@types/node": "^24.5.2",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",

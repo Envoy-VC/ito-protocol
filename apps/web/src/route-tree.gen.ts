@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./app/__root";
+import { Route as DashboardIndexRouteImport } from "./app/dashboard/index";
 import { Route as IndexRouteImport } from "./app/index";
 
 const IndexRoute = IndexRouteImport.update({
@@ -16,27 +17,36 @@ const IndexRoute = IndexRouteImport.update({
   id: "/",
   path: "/",
 } as any);
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  getParentRoute: () => rootRouteImport,
+  id: "/dashboard/",
+  path: "/dashboard/",
+} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
+  "/dashboard": typeof DashboardIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
+  "/dashboard": typeof DashboardIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
+  "/dashboard/": typeof DashboardIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/";
+  fullPaths: "/" | "/dashboard";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/";
-  id: "__root__" | "/";
+  to: "/" | "/dashboard";
+  id: "__root__" | "/" | "/dashboard/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
+  DashboardIndexRoute: typeof DashboardIndexRoute;
 }
 
 declare module "@tanstack/react-router" {
@@ -48,10 +58,18 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/dashboard/": {
+      id: "/dashboard/";
+      path: "/dashboard";
+      fullPath: "/dashboard";
+      preLoaderRoute: typeof DashboardIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
   IndexRoute: IndexRoute,
 };
 export const routeTree = rootRouteImport
