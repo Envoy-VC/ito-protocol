@@ -5,8 +5,8 @@ import { Web3Provider } from "./web3";
 
 export const ProviderTree = ({ children }: PropsWithChildren) => {
   return (
-    <QueryProvider>
-      <Web3Provider>{children}</Web3Provider>
-    </QueryProvider>
+    <Web3Provider>
+      <QueryProvider>{children}</QueryProvider>
+    </Web3Provider>
   );
 };

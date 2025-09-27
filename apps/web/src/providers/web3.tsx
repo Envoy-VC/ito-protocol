@@ -1,4 +1,4 @@
-import { citreaTestnet, mainnet } from "@reown/appkit/networks";
+import { type Chain, citreaTestnet, mainnet } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { WagmiProvider } from "wagmi";
@@ -14,12 +14,12 @@ const metadata = {
   url: "https://ito-protocol.vercel.app",
 };
 
-const networks = [citreaTestnet, mainnet];
+const networks = [citreaTestnet, mainnet] as [Chain, Chain];
 
 const wagmiAdapter = new WagmiAdapter({
   networks,
   projectId,
-  ssr: false,
+  ssr: true,
 });
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig;
@@ -31,9 +31,11 @@ createAppKit({
     analytics: false,
   },
   metadata,
-  // @ts-expect-error safe
   networks,
   projectId,
+  themeVariables: {
+    "--w3m-accent": "#ed34e2",
+  },
 });
 
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
