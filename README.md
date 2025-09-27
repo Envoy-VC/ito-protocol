@@ -109,3 +109,5 @@ sequenceDiagram
 ![Impermanent Loss](./assets/4.png)
 
 Calculated using the following script: [scripts/il_c.py](./scripts/il_c.py)
+
+More info about the protocol can be found [here](https://hackmd.io/@envoy1084/HJsRLJL2xg).

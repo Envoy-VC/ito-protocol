@@ -355,7 +355,7 @@ export const itoPoolAbi = [
 ] as const;
 
 export const itoPoolAddress =
-  "0xaAfd0C408bF921F522082867151b03EF94D43844" as const;
+  "0x66e2d611763974a7645469bc179fA70e61CDC2F1" as const;
 
 export const itoPoolConfig = {
   abi: itoPoolAbi,
@@ -558,7 +558,7 @@ export const itoRouterAbi = [
 ] as const;
 
 export const itoRouterAddress =
-  "0x71fBEc51bb16982455AbCc63Ca78b4fcd9E42684" as const;
+  "0xC94e5f5E4829b2b9AC8938E7Fe4695F6ec1B9145" as const;
 
 export const itoRouterConfig = {
   abi: itoRouterAbi,
@@ -894,7 +894,7 @@ export const itoTokenAbi = [
 ] as const;
 
 export const itoTokenAddress =
-  "0xb8d4221efE13a25B06603Ad803A121571D1CDcAD" as const;
+  "0xE2567B2A7214877D395Dfa6ca72335644B26dC23" as const;
 
 export const itoTokenConfig = {
   abi: itoTokenAbi,
@@ -1230,7 +1230,7 @@ export const mockEthAbi = [
 ] as const;
 
 export const mockEthAddress =
-  "0x1CADA5E3387e24869Cc92a47D90A94562E2307a9" as const;
+  "0xBCa528fCc1Ec19fC103Ea855BB3E371465eF74F0" as const;
 
 export const mockEthConfig = {
   abi: mockEthAbi,
@@ -1376,7 +1376,7 @@ export const mockOracleAbi = [
 ] as const;
 
 export const mockOracleAddress =
-  "0x321cDdD83465bFBa13ec1B16063739f151f976be" as const;
+  "0xc77ab300b6270dA732b137a592Ce54c468859dEf" as const;
 
 export const mockOracleConfig = {
   abi: mockOracleAbi,
@@ -1712,7 +1712,7 @@ export const mockUsdcAbi = [
 ] as const;
 
 export const mockUsdcAddress =
-  "0xf27E940daC4DfA1652Aef95614059925DAE9b273" as const;
+  "0x0e561F34e023330D56AfB3b5Af082D5AF1fBf022" as const;
 
 export const mockUsdcConfig = {
   abi: mockUsdcAbi,
