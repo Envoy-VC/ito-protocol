@@ -52,6 +52,9 @@ contract ItoPool is IPool, ReentrancyGuard {
     /// @notice Mapping that stores the swap requests
     mapping(uint256 => SwapRequest) public swapRequests;
 
+    /// @notice Keep track of request id.
+    uint256 public nextRequestId;
+
     // =============================================================
     //                           Constructor
     // =============================================================
@@ -180,8 +183,8 @@ contract ItoPool is IPool, ReentrancyGuard {
         // Transfer tokens from user
         IERC20(tokenIn).safeTransferFrom(user, address(this), amountIn);
 
-        // TODO: Request Randomness from VRF.
-        uint256 requestId = 0;
+        uint256 requestId = nextRequestId;
+        nextRequestId++;
 
         // Store swap request
         swapRequests[requestId] = SwapRequest({

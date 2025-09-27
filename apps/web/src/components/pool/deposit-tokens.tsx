@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { formatEther } from "viem";
 
 import {
+  mockEthAddress,
+  mockUsdcAddress,
   useReadItoPoolGetPoolState,
   useReadMockOracleGetPrice,
   useReadMockOracleGetVolatility,
@@ -17,8 +19,12 @@ export const DepositTokens = () => {
   const { ethAmount, setUsdAmount } = usePoolStore();
 
   const { data: poolState } = useReadItoPoolGetPoolState();
-  const { data: vol } = useReadMockOracleGetVolatility();
-  const { data: price } = useReadMockOracleGetPrice();
+  const { data: vol } = useReadMockOracleGetVolatility({
+    args: [mockEthAddress, mockUsdcAddress],
+  });
+  const { data: price } = useReadMockOracleGetPrice({
+    args: [mockEthAddress, mockUsdcAddress],
+  });
 
   useEffect(() => {
     const reserveA = Number(formatEther(poolState?.reserveA ?? 0n));

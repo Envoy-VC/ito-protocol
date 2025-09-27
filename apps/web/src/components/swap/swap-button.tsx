@@ -3,9 +3,11 @@ import { useMemo } from "react";
 import { Button } from "@ito-protocol/ui/components/button";
 import { waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { parseEther } from "viem";
+import { hexToBigInt, keccak256, parseEventLogs } from "viem/utils";
 import { useAccount } from "wagmi";
 
 import {
+  itoPoolAbi,
   itoPoolAddress,
   itoPoolConfig,
   mockEthConfig,
@@ -47,8 +49,31 @@ export const SwapButton = () => {
         functionName: "swap",
       });
       setStatus("waiting-for-confirmation");
-      await waitForTransactionReceipt(wagmiConfig, { hash });
+      const receipt = await waitForTransactionReceipt(wagmiConfig, {
+        confirmations: 5,
+        hash,
+      });
+      const logs = parseEventLogs({
+        abi: itoPoolAbi,
+        logs: receipt.logs,
+      });
+      console.log(logs);
+      const requestId = logs.find((l) => l.eventName === "SwapInitiated")?.args
+        .requestId;
+      if (!requestId) {
+        throw new Error("Request Id not found");
+      }
       setStatus("request-sent");
+
+      const random = hexToBigInt(keccak256(Buffer.from(crypto.randomUUID())));
+
+      setStatus("processing");
+      const hash2 = await writeContract(wagmiConfig, {
+        ...itoPoolConfig,
+        args: [requestId, [random]],
+        functionName: "fulfillSwap",
+      });
+      await waitForTransactionReceipt(wagmiConfig, { hash: hash2 });
     } catch (error) {
       console.error(error);
       setStatus("error");

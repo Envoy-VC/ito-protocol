@@ -8,6 +8,8 @@ import { formatEther, zeroAddress } from "viem";
 import { useAccount } from "wagmi";
 
 import {
+  mockEthAddress,
+  mockUsdcAddress,
   useReadMockEthBalanceOf,
   useReadMockOracleGetPrice,
   useReadMockUsdcBalanceOf,
@@ -29,12 +31,16 @@ export const FacetContainer = () => {
       args: [address ?? zeroAddress],
     });
 
+  console.log(mockEthBalance);
+
   const { data: mockUsdBalance, refetch: refetchMockUsdBalance } =
     useReadMockUsdcBalanceOf({
       args: [address ?? zeroAddress],
     });
 
-  const { data: ethPriceInUsd } = useReadMockOracleGetPrice({});
+  const { data: ethPriceInUsd } = useReadMockOracleGetPrice({
+    args: [mockEthAddress, mockUsdcAddress],
+  });
 
   const amountValue = useMemo(() => {
     const a = amount ?? 0;

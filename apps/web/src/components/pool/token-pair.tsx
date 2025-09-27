@@ -3,15 +3,22 @@ import { useMemo } from "react";
 import { EthereumIcon, USDCIcon } from "@ito-protocol/ui/icons";
 import { formatEther } from "viem";
 
-import { useReadMockOracleGetPrice } from "@/__generated__/wagmi";
+import {
+  mockEthAddress,
+  mockUsdcAddress,
+  useReadMockOracleGetPrice,
+} from "@/__generated__/wagmi";
 
 export const TokenPairDetails = () => {
-  const { data: price } = useReadMockOracleGetPrice();
+  const { data: price } = useReadMockOracleGetPrice({
+    args: [mockEthAddress, mockUsdcAddress],
+  });
 
   const data = useMemo(() => {
     const formatted = Number(formatEther(price ?? 0n));
     return Number(formatted.toFixed(2)).toLocaleString();
   }, [price]);
+
   return (
     <div className="flex w-full max-w-xl flex-col gap-2 rounded-3xl border px-6 py-6">
       <div className="flex flex-row items-center gap-2">

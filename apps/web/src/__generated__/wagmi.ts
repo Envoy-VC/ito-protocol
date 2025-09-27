@@ -111,6 +111,13 @@ export const itoPoolAbi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "nextRequestId",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "address", name: "user", type: "address" }],
     name: "pendingRewards",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
@@ -348,7 +355,7 @@ export const itoPoolAbi = [
 ] as const;
 
 export const itoPoolAddress =
-  "0x0000000000000000000000000000000000000000" as const;
+  "0x66e2d611763974a7645469bc179fA70e61CDC2F1" as const;
 
 export const itoPoolConfig = {
   abi: itoPoolAbi,
@@ -551,7 +558,7 @@ export const itoRouterAbi = [
 ] as const;
 
 export const itoRouterAddress =
-  "0x0000000000000000000000000000000000000000" as const;
+  "0xC94e5f5E4829b2b9AC8938E7Fe4695F6ec1B9145" as const;
 
 export const itoRouterConfig = {
   abi: itoRouterAbi,
@@ -887,7 +894,7 @@ export const itoTokenAbi = [
 ] as const;
 
 export const itoTokenAddress =
-  "0x0000000000000000000000000000000000000000" as const;
+  "0xE2567B2A7214877D395Dfa6ca72335644B26dC23" as const;
 
 export const itoTokenConfig = {
   abi: itoTokenAbi,
@@ -1223,7 +1230,7 @@ export const mockEthAbi = [
 ] as const;
 
 export const mockEthAddress =
-  "0x0000000000000000000000000000000000000000" as const;
+  "0xBCa528fCc1Ec19fC103Ea855BB3E371465eF74F0" as const;
 
 export const mockEthConfig = {
   abi: mockEthAbi,
@@ -1238,8 +1245,6 @@ export const mockOracleAbi = [
   {
     inputs: [
       { internalType: "address", name: "initialOwner", type: "address" },
-      { internalType: "uint256", name: "_price", type: "uint256" },
-      { internalType: "uint256", name: "_volatility", type: "uint256" },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
@@ -1272,7 +1277,10 @@ export const mockOracleAbi = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      { internalType: "address", name: "", type: "address" },
+      { internalType: "address", name: "", type: "address" },
+    ],
     name: "price",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
@@ -1300,6 +1308,18 @@ export const mockOracleAbi = [
     inputs: [
       { internalType: "address", name: "tokenA", type: "address" },
       { internalType: "address", name: "tokenB", type: "address" },
+      { internalType: "uint256", name: "_newPrice", type: "uint256" },
+      { internalType: "uint256", name: "_newVolatility", type: "uint256" },
+    ],
+    name: "setPriceAndVolatility",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "tokenA", type: "address" },
+      { internalType: "address", name: "tokenB", type: "address" },
       { internalType: "uint256", name: "_newVolatility", type: "uint256" },
     ],
     name: "setVolatility",
@@ -1315,7 +1335,10 @@ export const mockOracleAbi = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      { internalType: "address", name: "", type: "address" },
+      { internalType: "address", name: "", type: "address" },
+    ],
     name: "volatility",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
@@ -1353,7 +1376,7 @@ export const mockOracleAbi = [
 ] as const;
 
 export const mockOracleAddress =
-  "0x0000000000000000000000000000000000000000" as const;
+  "0xc77ab300b6270dA732b137a592Ce54c468859dEf" as const;
 
 export const mockOracleConfig = {
   abi: mockOracleAbi,
@@ -1689,7 +1712,7 @@ export const mockUsdcAbi = [
 ] as const;
 
 export const mockUsdcAddress =
-  "0x0000000000000000000000000000000000000000" as const;
+  "0x0e561F34e023330D56AfB3b5Af082D5AF1fBf022" as const;
 
 export const mockUsdcConfig = {
   abi: mockUsdcAbi,
@@ -1733,6 +1756,15 @@ export const useReadItoPoolGetUserPosition =
     address: itoPoolAddress,
     functionName: "getUserPosition",
   });
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link itoPoolAbi}__ and `functionName` set to `"nextRequestId"`
+ */
+export const useReadItoPoolNextRequestId = /*#__PURE__*/ createUseReadContract({
+  abi: itoPoolAbi,
+  address: itoPoolAddress,
+  functionName: "nextRequestId",
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link itoPoolAbi}__ and `functionName` set to `"pendingRewards"`
@@ -2913,6 +2945,16 @@ export const useWriteMockOracleSetPrice = /*#__PURE__*/ createUseWriteContract({
 });
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockOracleAbi}__ and `functionName` set to `"setPriceAndVolatility"`
+ */
+export const useWriteMockOracleSetPriceAndVolatility =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: mockOracleAbi,
+    address: mockOracleAddress,
+    functionName: "setPriceAndVolatility",
+  });
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link mockOracleAbi}__ and `functionName` set to `"setVolatility"`
  */
 export const useWriteMockOracleSetVolatility =
@@ -2958,6 +3000,16 @@ export const useSimulateMockOracleSetPrice =
     abi: mockOracleAbi,
     address: mockOracleAddress,
     functionName: "setPrice",
+  });
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link mockOracleAbi}__ and `functionName` set to `"setPriceAndVolatility"`
+ */
+export const useSimulateMockOracleSetPriceAndVolatility =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: mockOracleAbi,
+    address: mockOracleAddress,
+    functionName: "setPriceAndVolatility",
   });
 
 /**
