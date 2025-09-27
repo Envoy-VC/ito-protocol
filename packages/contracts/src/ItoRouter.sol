@@ -52,7 +52,8 @@ contract ItoRouter is Ownable, IRouter {
         // 1. Validate Pool Config
         validatePoolConfig(tokenA, tokenB, baseRewardRate);
 
-        bytes memory bytecode = abi.encodePacked(type(ItoPool).creationCode, abi.encode(tokenA, tokenB, baseRewardRate));
+        bytes memory bytecode =
+            abi.encodePacked(type(ItoPool).creationCode, abi.encode(tokenA, tokenB, baseRewardRate, address(this)));
         bytes32 bytecodeHash = keccak256(bytecode);
 
         // 2. Create Pool (Create2 Deterministic Address)
@@ -65,6 +66,8 @@ contract ItoRouter is Ownable, IRouter {
 
         // Deploy Pool contract
         Create2.deploy(0, salt, bytecode);
+
+        pools[tokenA][tokenB][baseRewardRate] = poolAddress;
 
         emit PoolCreated(tokenA, tokenB, baseRewardRate, poolAddress);
     }
