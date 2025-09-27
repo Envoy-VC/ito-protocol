@@ -189,7 +189,7 @@ contract ItoPool is IPool, ReentrancyGuard {
         return requestId;
     }
 
-    function fulfillSwap(uint256 requestId) external nonReentrant {
+    function fulfillSwap(uint256 requestId, uint256[] calldata randomWords) external nonReentrant {
         // Validate request
         SwapRequest storage request = swapRequests[requestId];
 
@@ -211,52 +211,46 @@ contract ItoPool is IPool, ReentrancyGuard {
         // Calculate stochastic price factor
         int256 exponent = _calculateExponent(volatility, timeDelta, z0);
 
-        uint256 priceFactor = _exp(exponent);
+        uint256 priceFactor = StochasticMath.exp(exponent);
 
         // Calculate effective price
-        uint256 effectivePrice = _calculateEffectivePrice(price, priceFactor, request.tokenIn, request.poolId);
+        uint256 effectivePrice = _calculateEffectivePrice(price, priceFactor, request.tokenIn);
 
         // Execute swap with stochastic price
         _executeSwap(requestId, effectivePrice, volatility);
     }
 
-    function _executeSwap(uint256 requestId, uint256 effectivePrice, uint256 volatility) private {
-        SAMMStorageLib.SAMMStorage storage ss = SAMMStorageLib.sammStorage();
-        SAMMStorageLib.SwapRequest storage request = ss.swapRequests[requestId];
-        LiquidityFacet liquidityFacet = LiquidityFacet(ss.itoProxy);
-        LiquidityStorageLib.PoolConfig memory pool = liquidityFacet.getPoolConfig(request.poolId);
-        LiquidityStorageLib.PoolState memory poolState = liquidityFacet.getPoolState(request.poolId);
+    function _executeSwap(uint256 requestId, uint256 effectivePrice, uint256 volatility) internal {
+        SwapRequest storage request = swapRequests[requestId];
 
         uint256 amountOut;
         uint256 fee;
 
-        if (request.tokenIn == pool.tokenA) {
-            amountOut = (request.amountIn * effectivePrice) / PRECISION;
+        if (request.tokenIn == tokenA) {
+            amountOut = (request.amountIn * effectivePrice) / StochasticMath.PRECISION;
 
             // Apply dynamic fee
-            fee = _calculateFee(request.amountIn, amountOut, volatility, request.poolId);
+            fee = _calculateFee(request.amountIn, amountOut, volatility);
             uint256 amountOutAfterFee = amountOut - fee;
 
             // Update Pools and Transfer tokens to user
-            require(amountOutAfterFee >= 0, "INSUFFICIENT_OUTPUT");
-            require(amountOutAfterFee <= poolState.reserveB, "INSUFFICIENT_LIQUIDITY");
+            if (amountOutAfterFee > poolState.reserveB) {
+                revert InsufficientLiquidity();
+            }
 
-            liquidityFacet._updatePoolAndTransferAfterSwap(
-                request.poolId, request.tokenIn, request.amountIn, pool.tokenB, amountOutAfterFee, request.user
-            );
+            _updatePoolAndTransferAfterSwap(request.tokenIn, request.amountIn, tokenB, amountOutAfterFee, request.user);
         } else {
-            amountOut = (request.amountIn * effectivePrice) / PRECISION;
+            amountOut = (request.amountIn * effectivePrice) / StochasticMath.PRECISION;
 
             // Apply dynamic fee
-            fee = _calculateFee(request.amountIn, amountOut, volatility, request.poolId);
+            fee = _calculateFee(request.amountIn, amountOut, volatility);
             uint256 amountOutAfterFee = amountOut - fee;
 
-            require(amountOutAfterFee > 0, "INSUFFICIENT_OUTPUT");
-            require(amountOutAfterFee <= poolState.reserveA, "INSUFFICIENT_LIQUIDITY");
+            if (amountOutAfterFee > poolState.reserveA) {
+                revert InsufficientLiquidity();
+            }
 
-            liquidityFacet._updatePoolAndTransferAfterSwap(
-                request.poolId, request.tokenIn, request.amountIn, pool.tokenA, amountOutAfterFee, request.user
-            );
+            _updatePoolAndTransferAfterSwap(request.tokenIn, request.amountIn, tokenA, amountOutAfterFee, request.user);
         }
 
         request.amountOut = amountOut;
@@ -348,5 +342,73 @@ contract ItoPool is IPool, ReentrancyGuard {
 
     function _getPrice() internal pure returns (uint256) {
         return 0;
+    }
+
+    function _calculateExponent(uint256 volatility, uint256 timeDelta, int256 z0) private pure returns (int256) {
+        // Calculate convexity adjustment: - (σ² * Δt)/2
+        uint256 sigma2 = (volatility * volatility) / StochasticMath.PRECISION;
+        uint256 timeDelta_sigma2 = (timeDelta * sigma2) / StochasticMath.PRECISION;
+        int256 convexityAdjustment = -int256(timeDelta_sigma2 / 2);
+
+        // Calculate random shock: σ * √(Δt) * Z₀
+        int256 sigma_z0 = (int256(volatility) * z0) / int256(StochasticMath.PRECISION);
+        int256 sqrt_timeDelta = int256(StochasticMath.sqrt(timeDelta * StochasticMath.PRECISION));
+        int256 randomShock = (sigma_z0 * sqrt_timeDelta) / int256(StochasticMath.PRECISION);
+
+        return convexityAdjustment + randomShock;
+    }
+
+    function _calculateEffectivePrice(uint256 marketPrice, uint256 priceFactor, address tokenIn)
+        private
+        view
+        returns (uint256)
+    {
+        if (tokenIn == tokenA) {
+            // TokenA -> TokenB: P_effective = P_market × factor
+            return (marketPrice * priceFactor) / StochasticMath.PRECISION;
+        } else {
+            // TokenB -> TokenA: P_effective = PRECISION² / (P_market × factor)
+            return (StochasticMath.PRECISION * StochasticMath.PRECISION)
+                / ((marketPrice * priceFactor) / StochasticMath.PRECISION);
+        }
+    }
+
+    function _calculateFee(uint256 amountIn, uint256 amountOut, uint256 volatility) private view returns (uint256) {
+        // SAMMStorageLib.SAMMStorage storage ss = SAMMStorageLib.sammStorage();
+        // LiquidityFacet liquidityFacet = LiquidityFacet(ss.itoProxy);
+
+        // LiquidityStorageLib.PoolConfig memory pool = liquidityFacet.getPoolConfig(poolId);
+        // LiquidityStorageLib.PoolState memory poolState = liquidityFacet.getPoolState(poolId);
+        // // Base fee component
+        // uint256 baseFee = (amountOut * BASE_FEE_BPS) / FEE_DENOMINATOR;
+
+        // // Volatility component (1 bps per 10% volatility)
+        // uint256 volatilityFactor = (amountOut * (volatility / 1e17)) / 100;
+
+        // // Depth component (0.1 bps per 1% of pool depth)
+        // uint256 poolDepth =
+        //     (amountIn * PRECISION) / ((pool.tokenA == address(0)) ? poolState.reserveA : poolState.reserveB);
+        // uint256 depthFactor = (amountOut * poolDepth) / (1000 * PRECISION);
+
+        return 0;
+    }
+
+    function _updatePoolAndTransferAfterSwap(
+        address tokenIn,
+        uint256 amountIn,
+        address tokenOut,
+        uint256 amountOut,
+        address user
+    ) internal {
+        if (tokenIn == tokenA) {
+            poolState.reserveA += amountIn;
+            poolState.reserveB -= amountOut;
+        } else {
+            poolState.reserveA -= amountOut;
+            poolState.reserveB += amountIn;
+        }
+
+        poolState.lastUpdate = block.timestamp;
+        IERC20(tokenOut).transfer(user, amountOut);
     }
 }

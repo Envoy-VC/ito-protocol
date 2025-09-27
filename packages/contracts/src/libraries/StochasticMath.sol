@@ -277,6 +277,25 @@ library StochasticMath {
         return Math.sqrt(x);
     }
 
+    function exp(int256 x) internal pure returns (uint256) {
+        // Handle negative exponents
+        bool isNegative = x < 0;
+        uint256 absX = isNegative ? uint256(-x) : uint256(x);
+
+        // Taylor series expansion parameters
+        uint256 result = PRECISION;
+        uint256 term = PRECISION;
+
+        // Max 10 iterations to balance accuracy and gas
+        for (uint256 i = 1; i < 10; i++) {
+            term = (term * absX) / PRECISION / i;
+            result += term;
+            if (term < 1e12) break; // Stop when terms become negligible
+        }
+
+        return isNegative ? (PRECISION * PRECISION) / result : result;
+    }
+
     function calculateTimeDelta(uint256 timestamp) internal view returns (uint256) {
         uint256 timeElapsed = block.timestamp - timestamp;
         return (timeElapsed * PRECISION) / SECONDS_PER_YEAR;
