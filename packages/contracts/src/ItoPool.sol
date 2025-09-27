@@ -54,7 +54,7 @@ contract ItoPool is IPool, ReentrancyGuard {
         baseRewardRate = _baseRewardRate;
 
         poolState =
-            PoolState({reserveA: 0, reserveB: 0, totalLPTokens: 0, lastUpdate: block.timestamp, accRewardPerShare: 0});
+            PoolState({reserveA: 0, reserveB: 0, totalLPTokens: 0, lastUpdate: block.timestamp, accRewardPerShare: 100});
 
         router = ItoRouter(_router);
     }
@@ -352,11 +352,13 @@ contract ItoPool is IPool, ReentrancyGuard {
     }
 
     function _getVolatility() internal pure returns (uint256) {
-        return 0;
+        // 0.5% volatility
+        return 5e17;
     }
 
     function _getPrice() internal pure returns (uint256) {
-        return 0;
+        // 120k
+        return 120000e18;
     }
 
     function _calculateExponent(uint256 volatility, uint256 timeDelta, int256 z0) private pure returns (int256) {
