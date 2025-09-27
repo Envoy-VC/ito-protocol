@@ -9,36 +9,36 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./app/__root";
-import { Route as DashboardRouteRouteImport } from "./app/dashboard/route";
-import { Route as IndexRouteImport } from "./app/index";
+import { Route as DashboardFaucetRouteImport } from "./app/dashboard/faucet";
 import { Route as DashboardIndexRouteImport } from "./app/dashboard/index";
 import { Route as DashboardPoolRouteImport } from "./app/dashboard/pool";
-import { Route as DashboardFaucetRouteImport } from "./app/dashboard/faucet";
+import { Route as DashboardRouteRouteImport } from "./app/dashboard/route";
+import { Route as IndexRouteImport } from "./app/index";
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  getParentRoute: () => rootRouteImport,
   id: "/dashboard",
   path: "/dashboard",
-  getParentRoute: () => rootRouteImport,
 } as any);
 const IndexRoute = IndexRouteImport.update({
+  getParentRoute: () => rootRouteImport,
   id: "/",
   path: "/",
-  getParentRoute: () => rootRouteImport,
 } as any);
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  getParentRoute: () => DashboardRouteRoute,
   id: "/",
   path: "/",
-  getParentRoute: () => DashboardRouteRoute,
 } as any);
 const DashboardPoolRoute = DashboardPoolRouteImport.update({
+  getParentRoute: () => DashboardRouteRoute,
   id: "/pool",
   path: "/pool",
-  getParentRoute: () => DashboardRouteRoute,
 } as any);
 const DashboardFaucetRoute = DashboardFaucetRouteImport.update({
+  getParentRoute: () => DashboardRouteRoute,
   id: "/faucet",
   path: "/faucet",
-  getParentRoute: () => DashboardRouteRoute,
 } as any);
 
 export interface FileRoutesByFullPath {
@@ -134,8 +134,8 @@ interface DashboardRouteRouteChildren {
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardFaucetRoute: DashboardFaucetRoute,
-  DashboardPoolRoute: DashboardPoolRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardPoolRoute: DashboardPoolRoute,
 };
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
@@ -143,8 +143,8 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 );
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  IndexRoute: IndexRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

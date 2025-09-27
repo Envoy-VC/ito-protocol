@@ -102,3 +102,10 @@ sequenceDiagram
     SAMM->>User: Transfer output tokens
     deactivate SAMM
 ```
+
+
+## Impermanent Loss Compared to Other AMMs
+
+![Impermanent Loss](./assets/4.png)
+
+Calculated using the following script: [scripts/il_c.py](./scripts/il_c.py)
