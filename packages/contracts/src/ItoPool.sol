@@ -29,6 +29,12 @@ contract ItoPool is IPool, ReentrancyGuard {
     /// @notice The address of the tokenB for the pool
     address public immutable tokenB;
 
+    // @notice The base fee bps for the pool
+    uint256 private constant BASE_FEE_BPS = 5; // 0.05%
+
+    // @notice The fee denominator for the pool
+    uint256 private constant FEE_DENOMINATOR = 10000;
+
     // =============================================================
     //                           State Variables
     // =============================================================
@@ -390,21 +396,16 @@ contract ItoPool is IPool, ReentrancyGuard {
     }
 
     function _calculateFee(uint256 amountIn, uint256 amountOut, uint256 volatility) private view returns (uint256) {
-        // SAMMStorageLib.SAMMStorage storage ss = SAMMStorageLib.sammStorage();
-        // LiquidityFacet liquidityFacet = LiquidityFacet(ss.itoProxy);
+        // Base fee component
+        uint256 baseFee = (amountOut * BASE_FEE_BPS) / FEE_DENOMINATOR;
 
-        // LiquidityStorageLib.PoolConfig memory pool = liquidityFacet.getPoolConfig(poolId);
-        // LiquidityStorageLib.PoolState memory poolState = liquidityFacet.getPoolState(poolId);
-        // // Base fee component
-        // uint256 baseFee = (amountOut * BASE_FEE_BPS) / FEE_DENOMINATOR;
+        // Volatility component (1 bps per 10% volatility)
+        uint256 volatilityFactor = (amountOut * (volatility / 1e17)) / 100;
 
-        // // Volatility component (1 bps per 10% volatility)
-        // uint256 volatilityFactor = (amountOut * (volatility / 1e17)) / 100;
-
-        // // Depth component (0.1 bps per 1% of pool depth)
-        // uint256 poolDepth =
-        //     (amountIn * PRECISION) / ((pool.tokenA == address(0)) ? poolState.reserveA : poolState.reserveB);
-        // uint256 depthFactor = (amountOut * poolDepth) / (1000 * PRECISION);
+        // Depth component (0.1 bps per 1% of pool depth)
+        uint256 poolDepth =
+            (amountIn * StochasticMath.PRECISION) / ((tokenA == address(0)) ? poolState.reserveA : poolState.reserveB);
+        uint256 depthFactor = (amountOut * poolDepth) / (1000 * StochasticMath.PRECISION);
 
         return 0;
     }

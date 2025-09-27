@@ -45,19 +45,23 @@ contract ItoRouterUnitTest is Test, SetUp {
         vm.stopBroadcast();
     }
 
-    function _addLiquidity() internal {
-        address user = accounts.richard.addr;
+    function _addLiquidity(address user, uint256 amountADesired, uint256 amountBDesired) internal {
         vm.startBroadcast(user);
-        uint256 amountADesired = 1e18;
-        uint256 amountBDesired = 120_000e18;
 
-        mockBTC.mint(user, 1e18);
-        mockUSD.mint(user, 120_000e18);
-        mockBTC.approve(address(pool), 1e18);
-        mockUSD.approve(address(pool), 120_000e18);
+        mockBTC.mint(user, amountADesired);
+        mockUSD.mint(user, amountBDesired);
+        mockBTC.approve(address(pool), amountADesired);
+        mockUSD.approve(address(pool), amountBDesired);
 
         pool.addLiquidity(amountADesired, amountBDesired);
 
+        vm.stopBroadcast();
+    }
+
+    function _updatePriceAndVolatility(uint256 price, uint256 volatility) internal {
+        vm.startBroadcast(accounts.richard.addr);
+        oracle.setPrice(address(mockBTC), address(mockUSD), price);
+        oracle.setVolatility(address(mockBTC), address(mockUSD), volatility);
         vm.stopBroadcast();
     }
 
@@ -101,25 +105,31 @@ contract ItoRouterUnitTest is Test, SetUp {
     }
 
     function test_swap() public {
-        _addLiquidity();
+        _addLiquidity(accounts.richard.addr, 100_000e18, 120_000e18 * 100_000);
+        _updatePriceAndVolatility(118_000e18, 0.53e18);
 
         address user = accounts.dinesh.addr;
 
         vm.startBroadcast(user);
 
         // mint and approve tokens for pool
-        mockBTC.mint(user, 0.5e18);
-        mockBTC.approve(address(pool), 0.5e18);
+        mockBTC.mint(user, 1e18);
+        mockBTC.approve(address(pool), 1e18);
 
         // Log Balance before Swap
         console.log("\nBalance Before Swap");
         console.log("BTC Balance: ", mockBTC.balanceOf(user).parseDecimal(18, 4));
         console.log("USD Balance: ", mockUSD.balanceOf(user).parseDecimal(18, 4));
 
-        uint256 requestId = pool.swap(address(mockBTC), 0.5e18);
+        // wrap time
+        vm.warp(block.timestamp + 100);
+
+        uint256 requestId = pool.swap(address(mockBTC), 1e18);
 
         uint256[] memory randomWords = new uint256[](1);
-        randomWords[0] = uint256(keccak256(abi.encodePacked(block.timestamp, block.number)));
+        randomWords[0] = uint256(keccak256(abi.encodePacked("ahshha")));
+
+        console.log("Random Word: ", randomWords[0]);
 
         pool.fulfillSwap(requestId, randomWords);
 
