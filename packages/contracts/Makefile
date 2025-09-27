@@ -41,7 +41,7 @@ analyze:
 	slither .
 
 #########################
-### Deployment Options ###
+### Deployment Options###
 #########################
 
 # Default deploy (anvil or testnet/mainnet via ARGS)
@@ -53,29 +53,13 @@ deploy-anvil:
 	@echo "🚀 Deploying to local anvil..."
 	forge script script/Deploy.s.sol:Deploy --rpc-url http://127.0.0.1:8545 --broadcast
 
-deploy-sepolia:
-	@echo "🚀 Deploying to Sepolia..."
-	if [ -z "$$SEPOLIA_RPC_URL" ]; then \
-		echo "⚠️ Sepolia RPC Url is not set. Set SEPOLIA_RPC_URL in .env file."; \
+deploy-citrea-testnet:
+	@echo "🚀 Deploying to Citrea Testnet..."
+	if [ -z "$$CITREA_RPC_URL" ]; then \
+		echo "⚠️ Citrea RPC Url is not set. Set CITREA_RPC_URL in .env file."; \
 		exit 1; \
 	fi
-	if [ -z "$$ETHERSCAN_API_KEY" ]; then \
-		echo "⚠️ Etherscan API key is not set. Set ETHERSCAN_API_KEY in .env file."; \
-		exit 1; \
-	fi
-	forge script script/Deploy.s.sol:Deploy --rpc-url $(SEPOLIA_RPC_URL)  --account $(ACCOUNT_NAME) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
-
-deploy-mainnet:
-	if [ -z "$$MAINNET_RPC_URL" ]; then \
-		echo "⚠️ Mainnet RPC Url is not set. Set MAINNET_RPC_URL in .env file."; \
-		exit 1; \
-	fi
-	if [ -z "$$ETHERSCAN_API_KEY" ]; then \
-		echo "⚠️ Etherscan API key is not set. Set ETHERSCAN_API_KEY in .env file."; \
-		exit 1; \
-	fi
-	@echo "🚀 Deploying to Ethereum mainnet..."
-	forge script script/Deploy.s.sol:Deploy --rpc-url $(MAINNET_RPC_URL)  --account $(ACCOUNT_NAME) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
+	forge script script/Deploy.s.sol:DeployScript --rpc-url $(CITREA_RPC_URL)  --account $(ACCOUNT_NAME) --broadcast --verify --verifier blockscout --verifier-url https://explorer.testnet.citrea.xyz/api/ -vvvv
 
 ###################
 ### Diagnostics ###
@@ -103,6 +87,7 @@ help:
 	@echo "  make analyze           - Run static analysis"
 	@echo "  make deploy            - Deploy with args"
 	@echo "  make deploy-anvil      - Deploy locally"
+	@echo "  make deploy-citrea     - Deploy to Citrea testnet"
 	@echo "  make gas-report        - Capture gas costs"
 	@echo "  make clean             - Clean build artifacts"
 

@@ -29,7 +29,7 @@ contract SetUp is Test {
         vm.startBroadcast(accounts.richard.addr);
 
         rewardToken = new ItoToken(accounts.richard.addr);
-        oracle = new MockOracle(accounts.richard.addr, 120_000e18, 0.5e18);
+        oracle = new MockOracle(accounts.richard.addr);
 
         router = new ItoRouter(accounts.richard.addr, address(rewardToken), address(oracle));
 
