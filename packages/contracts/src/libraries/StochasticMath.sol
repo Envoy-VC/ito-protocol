@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.25;
 
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
@@ -14,6 +14,7 @@ library StochasticMath {
     uint256 internal constant EPSILON = 1; // To avoid ln(0)
     uint256 private constant P_LOW = 24250000000000000; // 0.02425 * 1e18
     uint256 private constant P_HIGH = PRECISION - P_LOW;
+    uint256 private constant SECONDS_PER_YEAR = 31536000;
 
     /// @notice Calculates the amount of token A and token B that should be
     /// added to reserveA and reserveB to achieve a desired amount of liquidity
@@ -274,5 +275,10 @@ library StochasticMath {
 
     function sqrt(uint256 x) internal pure returns (uint256) {
         return Math.sqrt(x);
+    }
+
+    function calculateTimeDelta(uint256 timestamp) internal view returns (uint256) {
+        uint256 timeElapsed = block.timestamp - timestamp;
+        return (timeElapsed * PRECISION) / SECONDS_PER_YEAR;
     }
 }
