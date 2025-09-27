@@ -29,6 +29,7 @@
     "./components/*": "./src/components/*.tsx",
     "./globals.css": "./src/styles/globals.css",
     "./hooks/*": "./src/hooks/*.ts",
+    "./icons": "./src/icons/index.ts",
     "./lib/*": "./src/lib/*.ts",
     "./postcss.config": "./postcss.config.mjs"
   },

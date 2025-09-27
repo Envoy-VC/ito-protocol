@@ -4,19 +4,20 @@ pragma solidity ^0.8.25;
 import {Test} from "forge-std/Test.sol";
 import {SetUp} from "test/common/SetUp.sol";
 
-import {MockToken} from "src/tokens/MockToken.sol";
+import {MockUSDC} from "src/tokens/MockUSD.sol";
+import {MockBTC} from "src/tokens/MockBTC.sol";
 
 import {console2 as console} from "forge-std/console2.sol";
 
 contract ItoRouterUnitTest is Test, SetUp {
-    MockToken public mockUSD;
-    MockToken public mockBTC;
+    MockUSDC public mockUSD;
+    MockBTC public mockBTC;
 
     function setUp() public override {
         super.setUp();
 
-        mockUSD = new MockToken(accounts.richard.addr);
-        mockBTC = new MockToken(accounts.richard.addr);
+        mockUSD = new MockUSDC(accounts.richard.addr);
+        mockBTC = new MockBTC(accounts.richard.addr);
     }
 
     function test_deployment() public view {

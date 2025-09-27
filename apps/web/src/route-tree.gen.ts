@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./app/__root";
+import { Route as DashboardFaucetRouteImport } from "./app/dashboard/faucet";
 import { Route as DashboardIndexRouteImport } from "./app/dashboard/index";
 import { Route as DashboardRouteRouteImport } from "./app/dashboard/route";
 import { Route as IndexRouteImport } from "./app/index";
@@ -28,28 +29,36 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: "/",
   path: "/",
 } as any);
+const DashboardFaucetRoute = DashboardFaucetRouteImport.update({
+  getParentRoute: () => DashboardRouteRoute,
+  id: "/faucet",
+  path: "/faucet",
+} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteRouteWithChildren;
+  "/dashboard/faucet": typeof DashboardFaucetRoute;
   "/dashboard/": typeof DashboardIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
+  "/dashboard/faucet": typeof DashboardFaucetRoute;
   "/dashboard": typeof DashboardIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteRouteWithChildren;
+  "/dashboard/faucet": typeof DashboardFaucetRoute;
   "/dashboard/": typeof DashboardIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/dashboard" | "/dashboard/";
+  fullPaths: "/" | "/dashboard" | "/dashboard/faucet" | "/dashboard/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/dashboard";
-  id: "__root__" | "/" | "/dashboard" | "/dashboard/";
+  to: "/" | "/dashboard/faucet" | "/dashboard";
+  id: "__root__" | "/" | "/dashboard" | "/dashboard/faucet" | "/dashboard/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -80,14 +89,23 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DashboardIndexRouteImport;
       parentRoute: typeof DashboardRouteRoute;
     };
+    "/dashboard/faucet": {
+      id: "/dashboard/faucet";
+      path: "/faucet";
+      fullPath: "/dashboard/faucet";
+      preLoaderRoute: typeof DashboardFaucetRouteImport;
+      parentRoute: typeof DashboardRouteRoute;
+    };
   }
 }
 
 interface DashboardRouteRouteChildren {
+  DashboardFaucetRoute: typeof DashboardFaucetRoute;
   DashboardIndexRoute: typeof DashboardIndexRoute;
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardFaucetRoute: DashboardFaucetRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 };
 
